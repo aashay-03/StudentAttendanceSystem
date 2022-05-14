@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
+  <h1 class="heading">Login</h1>
+  <div class="login-box">
+    <%- include('partials/errorMsgs') %>
+    <form class="login-form" action="/login" method="POST">
+      <input type="email" name="username" placeholder="Email" required autofocus autocomplete="off" spellcheck="false">
+      <div class="password-field">
+        <input onkeyup="trigger()" class="pass" type="password" name="password" placeholder="Password" required autocomplete="off" spellcheck="false">
+        <span class="showBtn"><img class="eye-image" src="images/eye.png" alt="SHOW"></span>
+      </div>
+      <button type="submit">Login</button>
+      <div class="signup-link">Don't have an account? <a href="/register">Sign up</a></div>
+    </form>
+  </div>
+
+  <script defer src="js/signuplogin.js" charset="utf-8"></script>
+</body>
+
+</html>

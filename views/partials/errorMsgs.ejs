@@ -1,0 +1,36 @@
+<% if(typeof(errors) != 'undefined'){ %>
+<% errors.forEach(function(error) { %>
+<div class="alert-pop-up" style="background-color: #f8d7da; color: red; padding: 8px; border-radius: 5px; position: relative;">
+  <%= error.msg %>
+  <button id="0" type="button" name="button" style="border: none; outline: none; background: none; color: black; position: absolute; right: 10px;" onclick="removeAlert()">X</button>
+</div>
+<% }); %>
+<% } %>
+
+<% if(success_msg != ''){ %>
+<div class="alert-pop-up" style="background-color: #d4edda; color: green; padding: 8px; border-radius: 5px; position: relative;">
+  <%= success_msg %>
+  <button id="1" type="button" name="button" style="border: none; outline: none; background: none; color: black; position: absolute; right: 10px;" onclick="removeAlert()">X</button>
+</div>
+<% } %>
+
+<% if(error_msg != ''){ %>
+<div class="alert-pop-up" style="background-color: #f8d7da; color: red; padding: 8px; border-radius: 5px; position: relative;">
+  <%= error_msg %>
+  <button id="2" type="button" name="button" style="border: none; outline: none; background: none; color: black; position: absolute; right: 10px;" onclick="removeAlert()">X</button>
+</div>
+<% } %>
+
+<% if(error != ''){ %>
+<div class="alert-pop-up" style="background-color: #f8d7da; color: red; padding: 8px; border-radius: 5px; position: relative;">
+  Incorrect username or password
+  <button id="3" type="button" name="button" style="border: none; outline: none; background: none; color: black; position: absolute; right: 10px;" onclick="removeAlert()">X</button>
+</div>
+<% } %>
+
+<script>
+  function removeAlert() {
+    let alertCard = document.querySelector(".alert-pop-up");
+    alertCard.style.display = "none";
+  }
+</script>
