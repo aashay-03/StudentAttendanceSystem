@@ -1,10 +1,37 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Image Uploader</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <title>Home | Face Recognition</title>
+  <link rel="stylesheet" href="css/home.css">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="left-side-box">
+      <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
+      <h1 class="nameOfStudent">Welcome <%= studentName %>!</h1>
+    </div>
+    <a class="tooltip" href="/logout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+  </div>
+
+  <div class="container">
+    <div class="attendence-box">
+      <form class="attendence-form" action="/" method="POST">
+        <input type="text" name="subjectCode" placeholder="Enter Subject Code" required autofocus autocomplete="off" spellcheck="false">
+        <input type="text" name="facultyCode" placeholder="Enter Faculty Code" required autocomplete="off" spellcheck="false">
+        <input type="hidden" name="username" value="<%=username%>">
+        <input type="hidden" name="studentName" value="<%=studentName%>">
+        <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
+        <input type="hidden" name="branch" value="<%=branch%>">
+        <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
+        <button type="submit">Take Attendence</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+
 </html>

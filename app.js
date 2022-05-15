@@ -99,16 +99,29 @@ app.get("/register", ensureGuest, function(req, res) {
 });
 
 app.get("/", ensureAuth, function(req, res) {
-  res.render("home");
+  const currUser = req.user._id;
+  UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
+    if(result === null){
+      res.redirect("/uploadimages");
+    }else{
+      res.render("home", {studentName: req.user.studentName, enrollmentno: req.user.enrollmentno, branch: req.user.branch, username: req.user.username, imageUploaded: result.firstImagePath});
+    }
+  });
 });
 
 app.get("/uploadimages", function(req, res) {
   const currUser = req.user._id;
-  User.findOne({_id: currUser}, function(err, result) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("uploadimages", {studentName: result.studentName, enrollmentno: result.enrollmentno});
+  UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
+    if(result === null){
+      User.findOne({_id: currUser}, function(err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("uploadimages", {studentName: result.studentName, enrollmentno: result.enrollmentno});
+        }
+      });
+    }else{
+      res.redirect("/");
     }
   });
 });
@@ -222,7 +235,7 @@ app.post("/register", function(req, res) {
 });
 
 app.post("/login", passport.authenticate("local", {
-  successRedirect: "/uploadimages",
+  successRedirect: "/",
   failureRedirect: "/login",
   failureFlash: true
 }));
