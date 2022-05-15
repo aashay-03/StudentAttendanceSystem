@@ -68,9 +68,17 @@ const userSchema = new mongoose.Schema({
   }
 });
 
+const uploadedImagesSchema = new mongoose.Schema({
+  enrollmentno: String,
+  firstImagePath: String,
+  secondImagePath: String,
+  thirdImagePath: String
+});
+
 userSchema.plugin(passportLocalMongoose);
 
 const User = mongoose.model("user", userSchema);
+const UploadedImages = mongoose.model("uploadedimages", uploadedImagesSchema);
 
 passport.use(User.createStrategy());
 
@@ -100,22 +108,53 @@ app.get("/uploadimages", function(req, res) {
     if (err) {
       console.log(err);
     } else {
-      res.render("uploadimages", {studentName: result.studentName});
+      res.render("uploadimages", {studentName: result.studentName, enrollmentno: result.enrollmentno});
     }
   });
 });
 
 app.post("/uploadimages", function(req, res) {
-  console.log(req.files);
   let errors = [];
   const firstImage = req.files.firstImage;
   const secondImage = req.files.secondImage;
   const thirdImage = req.files.thirdImage;
   if((firstImage.md5 === secondImage.md5) || (firstImage.md5 === thirdImage.md5) || (secondImage.md5 === thirdImage.md5)){
     errors.push({msg: "All photos should be distinct"});
-    res.render("uploadimages", {errors, studentName: req.body.studentName});
+    res.render("uploadimages", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno});
   }else{
-    res.render("home");
+    const imagesuploaded = new UploadedImages({
+      enrollmentno: req.body.enrollmentno,
+      firstImagePath: "Link1",
+      secondImagePath: "Link2",
+      thirdImagePath: "Link3"
+    });
+    imagesuploaded.save();
+    const query = {enrollmentno: req.body.enrollmentno};
+    cloudinary.uploader.upload(firstImage.tempFilePath, (err, result) => {
+      const firstLink = result.url;
+      UploadedImages.findOneAndUpdate(query, {firstImagePath: firstLink}, function(err, ans){
+        if(err){
+          console.log(err);
+        }
+      });
+    });
+    cloudinary.uploader.upload(secondImage.tempFilePath, (err, result) => {
+      const secondLink = result.url;
+      UploadedImages.findOneAndUpdate(query, {secondImagePath: secondLink}, function(err, ans){
+        if(err){
+          console.log(err);
+        }
+      });
+    });
+    cloudinary.uploader.upload(thirdImage.tempFilePath, (err, result) => {
+      const thirdLink = result.url;
+      UploadedImages.findOneAndUpdate(query, {thirdImagePath: thirdLink}, function(err, ans){
+        if(err){
+          console.log(err);
+        }
+      });
+    });
+    res.send("Image Uploaded Successfully");
   }
 });
 
@@ -183,7 +222,7 @@ app.post("/register", function(req, res) {
 });
 
 app.post("/login", passport.authenticate("local", {
-  successRedirect: "/",
+  successRedirect: "/uploadimages",
   failureRedirect: "/login",
   failureFlash: true
 }));
