@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Attendance</title>
+  <link rel="stylesheet" href="css/attendance.css">
+</head>
+
+<body onload="takeAttendance()">
+
+  <div class="navbar">
+    <div class="left-side-box">
+      <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
+      <h1 class="nameOfStudent">Welcome <%= studentName %>!</h1>
+    </div>
+    <a class="tooltip" href="/logout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+  </div>
+
+  <p class="imp-info"><%=studentName%></p>
+  <p class="first-image"><%=firstImage%></p>
+  <p class="second-image"><%=secondImage%></p>
+  <p class="third-image"><%=thirdImage%></p>
+
+  <div class="container">
+    <div class="video-box">
+      <video class="video" width="480p" height="360" muted autoplay="true"></video>
+    </div>
+    <p class="videoDesc">WebCam</p>
+    <h2 class="msg-textbox">Display Message</h2>
+    <form class="try-again-form" action="/tryagain" method="POST">
+      <button class="try-again-btn" type="submit" name="button">Try Again</button>
+    </form>
+    <form class="push-attendance-form" action="/pushattendance" method="POST">
+      <button class="push-attendance-to-db" type="submit" name="button">OK</button>
+      <input type="hidden" name="studentName" value="<%=studentName%>">
+      <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
+      <input type="hidden" name="branch" value="<%=branch%>">
+      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+    </form>
+  </div>
+
+  <script defer src="js/face-api.min.js" charset="utf-8"></script>
+  <script defer src="js/attendance.js" charset="utf-8"></script>
+
+</body>
+
+</html>

@@ -61,6 +61,7 @@ input {
   right: 18px;
   top: 35%;
   font-size: 13px;
+  cursor: pointer;
   display: none;
 }
 
@@ -71,6 +72,7 @@ input {
   margin: 13.5px 1px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .login-form button:hover {

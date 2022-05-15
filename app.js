@@ -75,10 +75,31 @@ const uploadedImagesSchema = new mongoose.Schema({
   thirdImagePath: String
 });
 
+const validateAttendanceSchema = new mongoose.Schema({
+  enrollmentno: String,
+  tries: Number,
+  subjectCode: String,
+  facultyCode: String,
+  todaysDate: String,
+  currTime: String
+});
+
+const attendanceSchema = new mongoose.Schema({
+  studentName: String,
+  enrollmentno: String,
+  branch: String,
+  subjectCode: String,
+  facultyCode: String,
+  todaysDate: String,
+  currTime: String
+});
+
 userSchema.plugin(passportLocalMongoose);
 
 const User = mongoose.model("user", userSchema);
 const UploadedImages = mongoose.model("uploadedimages", uploadedImagesSchema);
+const Validateattendance = mongoose.model("validateattendance", validateAttendanceSchema);
+const Attendance = mongoose.model("attendance", attendanceSchema);
 
 passport.use(User.createStrategy());
 
@@ -127,6 +148,8 @@ app.get("/uploadimages", function(req, res) {
 });
 
 app.post("/", function(req, res) {
+  console.log(req.body);
+  const currUser = req.body.username;
   let errors = [];
   if(req.body.subjectcode === "Select Subject Code"){
     errors.push({msg: "Please Select Subject Code"});
@@ -134,10 +157,119 @@ app.post("/", function(req, res) {
     errors.push({msg: "Please Select Faculty Code"});
   }
   if(errors.length > 0){
-    res.render("home", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: req.body.username, imageUploaded: req.body.imageUploaded});
+    res.render("home", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: currUser, imageUploaded: req.body.imageUploaded});
   }else{
-    res.send("Response recieved successfully");
+    const d = new Date();
+    let todaysDate = "";
+    const date = d.getDate();
+    const month = d.getMonth() + 1;
+    const year = d.getFullYear();
+    todaysDate += date + "/" + month + "/" + year;
+    let currTime = "";
+    const hour = d.getHours();
+    const minute = d.getMinutes();
+    const second = d.getSeconds();
+    currTime += hour + ":" + minute + ":" + second;
+    Attendance.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, function(err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (result === null) {
+          Validateattendance.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, function(err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              if (result === null) {
+                const attendancevalidator = new Validateattendance({
+                  enrollmentno: req.body.enrollmentno,
+                  tries: 1,
+                  subjectCode: req.body.subjectCode,
+                  facultyCode: req.body.facultyCode,
+                  todaysDate: todaysDate,
+                  currTime: currTime
+                });
+                attendancevalidator.save();
+                UploadedImages.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
+                  if(err){
+                    console.log(err);
+                  }else{
+                    res.render("attendance", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, secondImage: result.secondImagePath, thirdImage: result.thirdImagePath});
+                  }
+                });
+              } else {
+                const tryVar = result.tries + 1;
+                if (tryVar === 6) {
+                  res.send("You have exceeded the limit and can't mark your attenedance");
+                } else {
+                  Validateattendance.findOneAndUpdate({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, {tries: tryVar, currTime: currTime}, function(err, result) {
+                    if (err) {
+                      console.log(err);
+                    }
+                  });
+                  UploadedImages.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
+                    if(err){
+                      console.log(err);
+                    }else{
+                      res.render("attendance", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, secondImage: result.secondImagePath, thirdImage: result.thirdImagePath});
+                    }
+                  });
+                }
+              }
+            }
+          })
+        } else {
+          res.send("Attandence has been marked for the subject");
+        }
+      }
+    });
   }
+});
+
+app.post("/tryagain", function(req, res) {
+  res.redirect("/");
+});
+
+app.post("/pushattendance", function(req, res) {
+  const d = new Date();
+  let todaysDate = "";
+  const date = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  todaysDate += date + "/" + month + "/" + year;
+  let currTime = "";
+  const hour = d.getHours();
+  const minute = d.getMinutes();
+  const second = d.getSeconds();
+  const bigTime = (hour * 3600) + (minute * 60) + second;
+  currTime += hour + ":" + minute + ":" + second;
+  Validateattendance.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, function(err, result) {
+    if (err) {
+      console.log(err);
+    } else {
+      if (result != null) {
+        const timeRegistered = result.currTime;
+        const myArray = timeRegistered.split(":");
+        const smallTime = (parseInt(myArray[0]) * 3600) + (parseInt(myArray[1]) * 60) + parseInt(myArray[2]);
+        if ((bigTime - smallTime) <= 300) {
+          const attendee = new Attendance({
+            studentName: req.body.studentName,
+            enrollmentno: req.body.enrollmentno,
+            branch: req.body.branch,
+            subjectCode: req.body.subjectCode,
+            facultyCode: req.body.facultyCode,
+            todaysDate: todaysDate,
+            currTime: currTime
+          });
+          attendee.save();
+          res.send("Attendance Saved in Database");
+        } else {
+          res.send("Failed to push attendance within time limit. Please try again.");
+        }
+      } else {
+        res.send("Failed to record attendance. From next time, please try to submit your attendance before midnight.")
+      }
+    }
+  })
 });
 
 app.post("/uploadimages", function(req, res) {
@@ -159,7 +291,7 @@ app.post("/uploadimages", function(req, res) {
     const query = {enrollmentno: req.body.enrollmentno};
     cloudinary.uploader.upload(firstImage.tempFilePath, (err, result) => {
       const firstLink = result.url;
-      UploadedImages.findOneAndUpdate(query, {firstImagePath: firstLink}, function(err, ans){
+      UploadedImages.findOneAndUpdate(query, {firstImagePath: firstLink}, function(err, result){
         if(err){
           console.log(err);
         }
@@ -167,7 +299,7 @@ app.post("/uploadimages", function(req, res) {
     });
     cloudinary.uploader.upload(secondImage.tempFilePath, (err, result) => {
       const secondLink = result.url;
-      UploadedImages.findOneAndUpdate(query, {secondImagePath: secondLink}, function(err, ans){
+      UploadedImages.findOneAndUpdate(query, {secondImagePath: secondLink}, function(err, result){
         if(err){
           console.log(err);
         }
@@ -175,7 +307,7 @@ app.post("/uploadimages", function(req, res) {
     });
     cloudinary.uploader.upload(thirdImage.tempFilePath, (err, result) => {
       const thirdLink = result.url;
-      UploadedImages.findOneAndUpdate(query, {thirdImagePath: thirdLink}, function(err, ans){
+      UploadedImages.findOneAndUpdate(query, {thirdImagePath: thirdLink}, function(err, result){
         if(err){
           console.log(err);
         }

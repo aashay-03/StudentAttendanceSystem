@@ -85,13 +85,13 @@ body {
   height: calc(100vh - 75px);
 }
 
-.attendence-box {
+.attendance-box {
   padding: 25px 20px 20px 20px;
   border: 2px solid black;
   border-radius: 15px;
 }
 
-.attendence-form {
+.attendance-form {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -171,15 +171,16 @@ input {
   background-color: #1e90ff;
 }
 
-.attendence-form button {
+.attendance-form button {
   padding: 10px 20px;
   border: 1px solid black;
   outline: none;
   margin: 13.5px 1px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
+  cursor: pointer;
 }
 
-.attendence-form button:hover {
+.attendance-form button:hover {
   background-color: #e0ebeb;
 }

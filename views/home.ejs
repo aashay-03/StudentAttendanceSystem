@@ -18,10 +18,10 @@
   </div>
 
   <div class="container">
-    <div class="attendence-box">
+    <div class="attendance-box">
       <%- include('partials/errorMsgs') %>
-      <form class="attendence-form" action="/" method="POST">
-        <input class="hidden-subcode" type="hidden" name="subjectcode" value="">
+      <form class="attendance-form" action="/" method="POST">
+        <input class="hidden-subcode" type="hidden" name="subjectCode" value="">
         <div class="custom-select">
           <select>
             <option value="0">Select Subject Code</option>
@@ -39,7 +39,7 @@
             <option value="12">ETCS-358</option>
           </select>
         </div>
-        <input class="hidden-facultycode" type="hidden" name="facultycode" value="">
+        <input class="hidden-facultycode" type="hidden" name="facultyCode" value="">
         <div class="custom-select">
           <select>
             <option value="0">Select Faculty Code</option>
@@ -62,7 +62,7 @@
         <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
         <input type="hidden" name="branch" value="<%=branch%>">
         <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
-        <button type="submit">Take Attendence</button>
+        <button type="submit">Take Attendance</button>
       </form>
     </div>
   </div>
