@@ -19,9 +19,44 @@
 
   <div class="container">
     <div class="attendence-box">
+      <%- include('partials/errorMsgs') %>
       <form class="attendence-form" action="/" method="POST">
-        <input type="text" name="subjectCode" placeholder="Enter Subject Code" required autofocus autocomplete="off" spellcheck="false">
-        <input type="text" name="facultyCode" placeholder="Enter Faculty Code" required autocomplete="off" spellcheck="false">
+        <input class="hidden-subcode" type="hidden" name="subjectcode" value="">
+        <div class="custom-select">
+          <select>
+            <option value="0">Select Subject Code</option>
+            <option value="1">ETCS-202</option>
+            <option value="2">ETCS-204</option>
+            <option value="3">ETCS-206</option>
+            <option value="4">ETCS-208</option>
+            <option value="5">ETCS-302</option>
+            <option value="6">ETCS-304</option>
+            <option value="7">ETCS-306</option>
+            <option value="8">ETCS-308</option>
+            <option value="9">ETCS-252</option>
+            <option value="10">ETCS-254</option>
+            <option value="11">ETCS-356</option>
+            <option value="12">ETCS-358</option>
+          </select>
+        </div>
+        <input class="hidden-facultycode" type="hidden" name="facultycode" value="">
+        <div class="custom-select">
+          <select>
+            <option value="0">Select Faculty Code</option>
+            <option value="1">CDG</option>
+            <option value="2">CPS</option>
+            <option value="3">DKD</option>
+            <option value="4">FAG</option>
+            <option value="5">MAK</option>
+            <option value="6">MNG</option>
+            <option value="7">MSB</option>
+            <option value="8">OAK</option>
+            <option value="9">PMA</option>
+            <option value="10">PSJ</option>
+            <option value="11">SAK</option>
+            <option value="12">TSN</option>
+          </select>
+        </div>
         <input type="hidden" name="username" value="<%=username%>">
         <input type="hidden" name="studentName" value="<%=studentName%>">
         <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
@@ -32,6 +67,7 @@
     </div>
   </div>
 
+  <script defer src="js/home.js" charset="utf-8"></script>
 </body>
 
 </html>

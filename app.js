@@ -126,6 +126,20 @@ app.get("/uploadimages", function(req, res) {
   });
 });
 
+app.post("/", function(req, res) {
+  let errors = [];
+  if(req.body.subjectcode === "Select Subject Code"){
+    errors.push({msg: "Please Select Subject Code"});
+  }else if(req.body.facultycode === "Select Faculty Code"){
+    errors.push({msg: "Please Select Faculty Code"});
+  }
+  if(errors.length > 0){
+    res.render("home", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: req.body.username, imageUploaded: req.body.imageUploaded});
+  }else{
+    res.send("Response recieved successfully");
+  }
+});
+
 app.post("/uploadimages", function(req, res) {
   let errors = [];
   const firstImage = req.files.firstImage;
@@ -200,7 +214,7 @@ app.post("/register", function(req, res) {
         res.render("register", {errors, studentName, email, enrollmentno, branch});
       } else {
         if (req.body.branch === "") {
-          errors.push({msg: "Please select branch"});
+          errors.push({msg: "Please Select branch"});
         }
         if (errors.length > 0) {
           res.render("register", {errors, studentName, email, enrollmentno, branch});
