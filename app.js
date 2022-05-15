@@ -95,7 +95,28 @@ app.get("/", ensureAuth, function(req, res) {
 });
 
 app.get("/uploadimages", function(req, res) {
-  res.render("uploadimages");
+  const currUser = req.user._id;
+  User.findOne({_id: currUser}, function(err, result) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("uploadimages", {studentName: result.studentName});
+    }
+  });
+});
+
+app.post("/uploadimages", function(req, res) {
+  console.log(req.files);
+  let errors = [];
+  const firstImage = req.files.firstImage;
+  const secondImage = req.files.secondImage;
+  const thirdImage = req.files.thirdImage;
+  if((firstImage.md5 === secondImage.md5) || (firstImage.md5 === thirdImage.md5) || (secondImage.md5 === thirdImage.md5)){
+    errors.push({msg: "All photos should be distinct"});
+    res.render("uploadimages", {errors, studentName: req.body.studentName});
+  }else{
+    res.render("home");
+  }
 });
 
 app.post("/register", function(req, res) {

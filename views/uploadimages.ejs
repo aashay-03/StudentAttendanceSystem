@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Upload Images</title>
+  <link rel="stylesheet" href="css/uploadImages.css">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <h1 class="nameOfStudent">Welcome <%= studentName %>!</h1>
+  </div>
+
+  <p class="imp-info"><%= studentName %></p>
+
+  <div class="container">
+    <h1 class="instruction-heading">Upload your photographs for Face Recognition Attendance System</h1>
+    <div class="instruction-box">
+      <ul>
+        <li>'Image1' will be used as the profile photo for your account on this application</li>
+        <li>No group photos are allowed</li>
+        <li>Make sure that your face is clearly visible in all the photos</li>
+        <li>Allowed file types are .jpg, .jpeg, .png</li>
+      </ul>
+    </div>
+    <div class="upload-images-box">
+      <%- include('partials/errorMsgs') %>
+      <form class="upload-images-form" action="/uploadimages" method="post" enctype="multipart/form-data">
+        <div class="image-container">
+          <div class="image-input">
+            <label for="firstFile">Image1:</label>
+            <input id="firstFile" class="file" type="file" name="firstImage" accept="image/*" required>
+          </div>
+          <p class="sub-label first-sl">First Photo</p>
+        </div>
+        <div class="image-container">
+          <div class="image-input">
+            <label for="secondFile">Image2:</label>
+            <input id="secondFile" class="file" type="file" name="secondImage" accept="image/*" required>
+          </div>
+          <p class="sub-label second-sl">Second Photo</p>
+        </div>
+        <div class="image-container">
+          <div class="image-input">
+            <label for="thirdFile">Image3:</label>
+            <input id="thirdFile" class="file" type="file" name="thirdImage" accept="image/*" required>
+          </div>
+          <p class="sub-label third-sl">Third Photo</p>
+        </div>
+        <p class="error-msg">Faces in photos don't match</p>
+        <input type="hidden" name="studentName" value="<%= studentName %>">
+        <button class="displayBtn" type="button" name="button">Upload</button>
+        <button class="submitBtn" type="submit" name="button">Upload</button>
+      </form>
+    </div>
+  </div>
+
+  <script defer src="js/face-api.min.js" charset="utf-8"></script>
+  <script defer src="js/uploadimages.js" charset="utf-8"></script>
+
+
+</body>
+
+</html>
