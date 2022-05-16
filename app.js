@@ -218,7 +218,7 @@ app.post("/", function(req, res) {
             }
           })
         } else {
-          res.send("Attandence has been marked for the subject");
+          res.render("messages", {msg: "Attendance is already marked for this subject.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
         }
       }
     });
@@ -261,12 +261,12 @@ app.post("/pushattendance", function(req, res) {
             currTime: currTime
           });
           attendee.save();
-          res.send("Attendance Saved in Database");
+          res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
         } else {
-          res.send("Failed to push attendance within time limit. Please try again.");
+          res.render("messages", {msg: "Failed to push attendance within the time limit. Please try again.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Try Again"});
         }
       } else {
-        res.send("Failed to record attendance. From next time, please try to submit your attendance before midnight.")
+        res.render("messages", {msg: "Failed to record attendance. Next time, please try to submit your attendance before midnight.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Try Again"});
       }
     }
   })
@@ -313,7 +313,7 @@ app.post("/uploadimages", function(req, res) {
         }
       });
     });
-    res.send("Image Uploaded Successfully");
+    res.render("message", {msg: "Images Uploaded Successfully!", studentName: req.body.studentName});
   }
 });
 

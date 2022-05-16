@@ -8,11 +8,13 @@ const studentName = document.querySelector(".imp-info");
 const firstImage = document.querySelector(".first-image");
 const secondImage = document.querySelector(".second-image");
 const thirdImage = document.querySelector(".third-image");
+const alertMsg = document.querySelector(".alert-msg");
+const display = document.querySelector(".time");
 const myArr = [firstImage.innerHTML, secondImage.innerHTML, thirdImage.innerHTML];
 const myLabel = studentName.innerHTML;
 const startTime = new Date();
 console.log(startTime);
-
+var fiveMinutes = 300;
 var match = 0;
 var notmatch = 0;
 var total = 0;
@@ -23,8 +25,8 @@ function updateTime(){
   var currTime = new Date();
   var diff = currTime - startTime;
   console.log(diff);
-  if(diff > 45000){
-    if(match < 135){
+  if(diff > 60000){
+    if(match < 35){
       match = 0;
       notmatch = 0;
     }
@@ -95,7 +97,10 @@ async function recognizeFaces() {
         return faceMatcher.findBestMatch(d.descriptor);
       });
       total = match + notmatch;
-      if (total >= 120) {
+      console.log(total);
+      console.log(match);
+      console.log(notmatch);
+      if (total >= 40) {
         stopFunction();
         clearInterval(myFunction);
         return;
@@ -113,7 +118,7 @@ async function recognizeFaces() {
         const drawBox = new faceapi.draw.DrawBox(box, {label: "Scanning Face " + dist})
         drawBox.draw(canvas);
       })
-    }, 100)
+    }, 1000);
   })
 }
 
@@ -143,7 +148,7 @@ function stopFunction() {
     message.innerHTML = "Taking too long to detect face. Please check camera quality and try again. Ensure that your face is properly aligned with the webcam.";
     message.style.color = "red";
     tryAgainButton.style.display = "block";
-  }else if(match < 110){
+  }else if(match < 35){
     message.innerHTML = "Unable to detect face. Please try again.";
     message.style.color = "red";
     tryAgainButton.style.display = "block";
@@ -151,5 +156,24 @@ function stopFunction() {
     message.innerHTML = "Attendance taken successfully. Please press 'OK' to push your attendance in database.";
     message.style.color = "green";
     pushToDB.style.display = "block";
+    alertMsg.style.display = "block";
+    startTimer(fiveMinutes, display);
   }
+}
+
+function startTimer(duration, display) {
+    var timer = duration;
+    var minutes;
+    var seconds;
+    minutes = parseInt(timer / 60, 10);
+    seconds = parseInt(timer % 60, 10);
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    display.textContent = minutes + ":" + seconds;
+    fiveMinutes--;
+    if(fiveMinutes < 0){
+       window.location.href = "http://localhost:3000";
+    }
 }

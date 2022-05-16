@@ -85,83 +85,22 @@ body {
   height: calc(100vh - 75px);
 }
 
-.container p {
-  margin-top: 15px;
-  color: #000;
-}
-
-.container button {
+.container a {
   padding: 10px 20px;
   border: 1px solid black;
   outline: none;
-  margin: 15px;
+  margin: 13.5px 1px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
-  margin-bottom: 45px;
+  text-decoration: none;
   background-color: #efefef;
-  cursor: pointer;
 }
 
-.container .msg-textbox {
-  display: none;
-  margin-bottom: 9px;
-  padding: 0 15%;
-}
-
-.alert-msg {
-  color: red;
-  display: none;
-  margin-bottom: 5px;
-  margin-top: 7px;
-}
-
-.container button:hover {
+.contianer a:hover {
   background-color: #e0ebeb;
 }
 
-.try-again-btn {
-  display: none;
-}
-
-.push-attendance-to-db {
-  display: none;
-}
-
-canvas {
-  width: 480px;
-  position: absolute;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  top: 0;
-  text-align: center;
-}
-
-.imp-info {
-  display: none;
-}
-
-.first-image {
-  display: none;
-}
-
-.second-image {
-  display: none;
-}
-
-.third-image {
-  display: none;
-}
-
-.video {
-  display: none;
-}
-
-.videoDesc {
-  display: none;
-}
-
-.video-box {
-  position: relative;
+.msg-textbox {
+  margin-bottom: 9px;
+  padding: 0 15%;
 }

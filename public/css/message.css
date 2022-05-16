@@ -1,0 +1,48 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  text-align: center;
+}
+
+.navbar {
+  background-color: #008ae6;
+  display: flex;
+  justify-content: space-between;
+  height: 76px;
+}
+
+.navbar h1 {
+  margin-left: 25px;
+  margin-top: 18.5px;
+  color: #fff;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 75px);
+}
+
+.msg-textbox {
+  margin-bottom: 9px;
+  padding: 0 15%;
+  color: green;
+}
+
+.msg-box {
+  display: flex;
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 9px;
+}
+
+.msg-text {
+  margin-right: 3px;
+}

@@ -28,6 +28,7 @@
     </div>
     <p class="videoDesc">WebCam</p>
     <h2 class="msg-textbox">Display Message</h2>
+    <div class="alert-msg">Press the button within <span class="time">05:00</span> minutes, or your attendance won't get recorded.</div>
     <form class="try-again-form" action="/tryagain" method="POST">
       <button class="try-again-btn" type="submit" name="button">Try Again</button>
     </form>
@@ -38,6 +39,7 @@
       <input type="hidden" name="branch" value="<%=branch%>">
       <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
       <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+      <input type="hidden" name="imageUploaded" value="<%=firstImage%>">
     </form>
   </div>
 
