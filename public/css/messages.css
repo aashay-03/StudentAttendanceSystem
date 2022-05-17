@@ -85,22 +85,23 @@ body {
   height: calc(100vh - 75px);
 }
 
-.container a {
+.container button {
   padding: 10px 20px;
   border: 1px solid black;
   outline: none;
   margin: 13.5px 1px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
-  text-decoration: none;
   background-color: #efefef;
+  cursor: pointer;
 }
 
-.contianer a:hover {
+.contianer button:hover {
   background-color: #e0ebeb;
 }
 
 .msg-textbox {
   margin-bottom: 9px;
   padding: 0 15%;
+  color: green;
 }

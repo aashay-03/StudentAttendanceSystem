@@ -1,5 +1,7 @@
 const subCode = document.querySelector(".hidden-subcode");
-const facCode = document.querySelector(".hidden-facultycode");
+const facultyCode = document.querySelector(".facultycode");
+const facCode = document.querySelector(".hidden-faccode");
+const attendanceBox = document.querySelector(".attendance-box");
 
 var x, i, j, l, ll, selElmnt, a, b, c;
 x = document.getElementsByClassName("custom-select");
@@ -25,6 +27,44 @@ for (i = 0; i < l; i++) {
         if (s.options[i].innerHTML == this.innerHTML) {
           s.selectedIndex = i;
           h.innerHTML = this.innerHTML;
+          const selectedVal = this.innerHTML;
+          switch(selectedVal){
+            case "ETCS-202":
+              facultyCode.value = "CDG";
+              break;
+            case "ETCS-204":
+              facultyCode.value = "MAK";
+              break;
+            case "ETCS-206":
+              facultyCode.value = "PMA";
+              break;
+            case "ETCS-208":
+              facultyCode.value = "CPS";
+              break;
+            case "ETCS-302":
+              facultyCode.value = "MNG";
+              break;
+            case "ETCS-304":
+              facultyCode.value = "PSJ";
+              break;
+            case "ETCS-306":
+              facultyCode.value = "DKD";
+              break;
+            case "ETCS-308":
+              facultyCode.value = "MSB";
+              break;
+            case "ETCS-252":
+              facultyCode.value = "SAK";
+              break;
+            case "ETCS-254":
+              facultyCode.value = "FAG";
+              break;
+            case "ETCS-356":
+              facultyCode.value = "OAK";
+              break;
+            case "ETCS-358":
+              facultyCode.value = "TSN";
+          }
           y = this.parentNode.getElementsByClassName("same-as-selected");
           yl = y.length;
           for (k = 0; k < yl; k++) {
@@ -44,6 +84,7 @@ for (i = 0; i < l; i++) {
     closeAllSelect(this);
     this.nextSibling.classList.toggle("select-hide");
     this.classList.toggle("select-arrow-active");
+    attendanceBox.classList.toggle("adjust-height");
   });
 }
 
@@ -52,7 +93,7 @@ function closeAllSelect(elmnt) {
   x = document.getElementsByClassName("select-items");
   y = document.getElementsByClassName("select-selected");
   subCode.value = y[0].innerHTML;
-  facCode.value = y[1].innerHTML;
+  facCode.value = facultyCode.value;
   xl = x.length;
   yl = y.length;
   for (i = 0; i < yl; i++) {
@@ -60,6 +101,7 @@ function closeAllSelect(elmnt) {
       arrNo.push(i)
     } else {
       y[i].classList.remove("select-arrow-active");
+      attendanceBox.classList.remove("adjust-height");
     }
   }
   for (i = 0; i < xl; i++) {

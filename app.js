@@ -151,10 +151,8 @@ app.post("/", function(req, res) {
   console.log(req.body);
   const currUser = req.body.username;
   let errors = [];
-  if(req.body.subjectcode === "Select Subject Code"){
+  if(req.body.subjectCode === "Select Subject Code"){
     errors.push({msg: "Please Select Subject Code"});
-  }else if(req.body.facultycode === "Select Faculty Code"){
-    errors.push({msg: "Please Select Faculty Code"});
   }
   if(errors.length > 0){
     res.render("home", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: currUser, imageUploaded: req.body.imageUploaded});
@@ -199,7 +197,7 @@ app.post("/", function(req, res) {
               } else {
                 const tryVar = result.tries + 1;
                 if (tryVar === 6) {
-                  res.send("You have exceeded the limit and can't mark your attenedance");
+                  res.render("attendanceFull", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
                 } else {
                   Validateattendance.findOneAndUpdate({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, {tries: tryVar, currTime: currTime}, function(err, result) {
                     if (err) {
@@ -225,11 +223,39 @@ app.post("/", function(req, res) {
   }
 });
 
+// app.get("/viewattendance", async function(req, res) {
+// let docs = await Attendance.aggregate([
+//   {
+//     $group: {
+//       _id: {
+//         studentName: "$studentName",
+//         enrollmentno: "$enrollmentno",
+//         branch: "$branch",
+//         subjectCode: "$subjectCode",
+//         facultyCode: "$facultyCode",
+//         todaysDate: "$todaysDate"
+//       },
+//       doc: {
+//         $last: "$$ROOT"
+//       }
+//     }
+//   },
+//   {
+//     $replaceRoot: {
+//       newRoot: "$doc"
+//     }
+//   }
+// ]);
+// console.log(docs.length);
+// res.send("Hello!");
+// });
+
 app.post("/tryagain", function(req, res) {
   res.redirect("/");
 });
 
 app.post("/pushattendance", function(req, res) {
+  console.log(req.body);
   const d = new Date();
   let todaysDate = "";
   const date = d.getDate();
@@ -240,36 +266,28 @@ app.post("/pushattendance", function(req, res) {
   const hour = d.getHours();
   const minute = d.getMinutes();
   const second = d.getSeconds();
-  const bigTime = (hour * 3600) + (minute * 60) + second;
   currTime += hour + ":" + minute + ":" + second;
-  Validateattendance.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, function(err, result) {
-    if (err) {
+  Attendance.findOne({enrollmentno: req.body.enrollmentno, subjectCode: req.body.subjectCode, todaysDate: todaysDate}, function(err, result){
+    if(err){
       console.log(err);
-    } else {
-      if (result != null) {
-        const timeRegistered = result.currTime;
-        const myArray = timeRegistered.split(":");
-        const smallTime = (parseInt(myArray[0]) * 3600) + (parseInt(myArray[1]) * 60) + parseInt(myArray[2]);
-        if ((bigTime - smallTime) <= 300) {
-          const attendee = new Attendance({
-            studentName: req.body.studentName,
-            enrollmentno: req.body.enrollmentno,
-            branch: req.body.branch,
-            subjectCode: req.body.subjectCode,
-            facultyCode: req.body.facultyCode,
-            todaysDate: todaysDate,
-            currTime: currTime
-          });
-          attendee.save();
-          res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
-        } else {
-          res.render("messages", {msg: "Failed to push attendance within the time limit. Please try again.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Try Again"});
-        }
-      } else {
-        res.render("messages", {msg: "Failed to record attendance. Next time, please try to submit your attendance before midnight.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Try Again"});
+    }else{
+      if(result === null){
+        const attendee = new Attendance({
+          studentName: req.body.studentName,
+          enrollmentno: req.body.enrollmentno,
+          branch: req.body.branch,
+          subjectCode: req.body.subjectCode,
+          facultyCode: req.body.facultyCode,
+          todaysDate: todaysDate,
+          currTime: currTime
+        });
+        attendee.save();
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
+      }else{
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
       }
     }
-  })
+  });
 });
 
 app.post("/uploadimages", function(req, res) {
@@ -315,6 +333,11 @@ app.post("/uploadimages", function(req, res) {
     });
     res.render("message", {msg: "Images Uploaded Successfully!", studentName: req.body.studentName});
   }
+});
+
+app.post("/attendanceFull", function(req, res) {
+  console.log(req.body);
+  res.send("Hello!");
 });
 
 app.post("/register", function(req, res) {

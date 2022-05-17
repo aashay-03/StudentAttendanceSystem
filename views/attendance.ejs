@@ -26,25 +26,24 @@
     <div class="video-box">
       <video class="video" width="480p" height="360" muted autoplay="true"></video>
     </div>
-    <p class="videoDesc">WebCam</p>
-    <h2 class="msg-textbox">Display Message</h2>
-    <div class="alert-msg">Press the button within <span class="time">05:00</span> minutes, or your attendance won't get recorded.</div>
+    <p class="videoDesc">Detecting Face...</p>
+    <h2 class="msg-textbox"></h2>
     <form class="try-again-form" action="/tryagain" method="POST">
       <button class="try-again-btn" type="submit" name="button">Try Again</button>
     </form>
+    <button class="btn">Home</button>
     <form class="push-attendance-form" action="/pushattendance" method="POST">
-      <button class="push-attendance-to-db" type="submit" name="button">OK</button>
       <input type="hidden" name="studentName" value="<%=studentName%>">
       <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
       <input type="hidden" name="branch" value="<%=branch%>">
       <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
       <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
-      <input type="hidden" name="imageUploaded" value="<%=firstImage%>">
+      <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
     </form>
   </div>
 
-  <script defer src="js/face-api.min.js" charset="utf-8"></script>
-  <script defer src="js/attendance.js" charset="utf-8"></script>
+  <script src="js/face-api.min.js" charset="utf-8"></script>
+  <script src="js/attendance.js" charset="utf-8"></script>
 
 </body>
 

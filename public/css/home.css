@@ -98,6 +98,10 @@ body {
   justify-content: center;
 }
 
+.adjust-height {
+  margin-bottom: 10%;
+}
+
 input {
   margin: 12px;
   padding: 8px 8px 8px 6.5px;
@@ -106,6 +110,7 @@ input {
   outline: none;
   border: 1px solid black;
   font-size: 1rem;
+  text-align: center;
 }
 
 .custom-select {
