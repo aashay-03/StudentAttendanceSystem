@@ -94,12 +94,26 @@ const attendanceSchema = new mongoose.Schema({
   currTime: String
 });
 
+const teacherMessageSchema = new mongoose.Schema({
+  studentName: String,
+  enrollmentno: String,
+  branch: String,
+  imageUploaded: String,
+  subjectCode: String,
+  facultyCode: String,
+  message: String,
+  currMonth: String,
+  todaysDate: String,
+  currTime: String
+});
+
 userSchema.plugin(passportLocalMongoose);
 
 const User = mongoose.model("user", userSchema);
 const UploadedImages = mongoose.model("uploadedimages", uploadedImagesSchema);
 const Validateattendance = mongoose.model("validateattendance", validateAttendanceSchema);
 const Attendance = mongoose.model("attendance", attendanceSchema);
+const Teachermessage = mongoose.model("teachermessage", teacherMessageSchema);
 
 passport.use(User.createStrategy());
 
@@ -337,7 +351,48 @@ app.post("/uploadimages", function(req, res) {
 
 app.post("/attendanceFull", function(req, res) {
   console.log(req.body);
-  res.send("Hello!");
+  const d = new Date();
+  const month = d.getMonth() + 1;
+  Teachermessage.find({enrollmentno: req.body.enrollmentno, subjectCode: req.body.subjectCode, currMonth: month}, function(err, result) {
+    if(err){
+      console.log(err);
+    }else{
+      if(result.length === 3){
+        res.render("messages", {msg: "Can't message teacher more than three times in a month.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
+      }else{
+        res.render("messageTeacher", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
+      }
+    }
+  });
+});
+
+app.post("/messageTeacher", function(req, res) {
+  console.log(req.body);
+  const d = new Date();
+  let todaysDate = "";
+  const date = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  todaysDate += date + "/" + month + "/" + year;
+  let currTime = "";
+  const hour = d.getHours();
+  const minute = d.getMinutes();
+  const second = d.getSeconds();
+  currTime += hour + ":" + minute + ":" + second;
+  const messageToTeacher = new Teachermessage({
+    studentName: req.body.studentName,
+    enrollmentno: req.body.enrollmentno,
+    branch: req.body.branch,
+    imageUploaded: req.body.imageUploaded,
+    subjectCode: req.body.subjectCode,
+    facultyCode: req.body.facultyCode,
+    message: req.body.messageForTeacher,
+    currMonth: month,
+    todaysDate: todaysDate,
+    currTime: currTime
+  });
+  messageToTeacher.save();
+  res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
 });
 
 app.post("/register", function(req, res) {

@@ -14,7 +14,20 @@
       <a class="tooltip" href="/logout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
     </div>
     <div class="container">
-
+      <div class="message-teacher-box">
+        <form class="message-teacher-form" action="/messageTeacher" method="POST">
+          <input type="text" name="facultyCode" value="Faculty Code: <%=facultyCode%>" disabled>
+          <input type="text" name="subjectCode" value="Subject Code: <%=subjectCode%>" disabled>
+          <textarea name="messageForTeacher" placeholder="Message" autofocus required></textarea>
+          <button type="submit" name="button">Message Teacher</button>
+          <input type="hidden" name="studentName" value="<%=studentName%>">
+          <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
+          <input type="hidden" name="branch" value="<%=branch%>">
+          <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+          <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+          <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
+        </form>
+      </div>
     </div>
   </body>
 </html>
