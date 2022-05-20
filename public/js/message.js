@@ -1,7 +1,7 @@
 const timeRemaining = document.querySelector(".num");
 
 setTimeout(function() {
-  window.location.href = "http://localhost:3000";
+  window.location.href = "http://localhost:3000/studentHome";
 }, 6000);
 
 var i = 5;

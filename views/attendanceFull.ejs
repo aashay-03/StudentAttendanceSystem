@@ -11,13 +11,13 @@
         <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
         <h1 class="nameOfStudent">Welcome <%= studentName %>!</h1>
       </div>
-      <a class="tooltip" href="/logout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+      <a class="tooltip" href="/studentLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
     </div>
 
     <div class="container">
       <h2 class="msg-textbox">You have exceeded the limit of maximum attempts for the day to mark your attendance for this subject.</h2>
       <div class="btn-box">
-        <a href="/">Home</a>
+        <a href="/home">Home</a>
         <form class="attendance-full-form" action="/attendanceFull" method="POST">
           <input type="hidden" name="studentName" value="<%=studentName%>">
           <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">

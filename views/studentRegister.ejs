@@ -3,18 +3,18 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Register</title>
+  <title>Student Register</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/register.css">
+  <link rel="stylesheet" href="css/studentRegister.css">
 </head>
 
 <body>
-  <h1 class="heading">REGISTER</h1>
+  <h1 class="heading">Student Register</h1>
   <div class="register-box">
     <%- include('partials/errorMsgs') %>
-    <form class="register-form" action="/register" method="POST">
+    <form class="register-form" action="/studentRegister" method="POST">
       <input type="text" name="studentName" placeholder="Name" required autofocus autocomplete="off" spellcheck="false">
       <input type="email" name="username" placeholder="Email" required autocomplete="off" spellcheck="false">
       <div class="password-field">
@@ -35,11 +35,11 @@
         </select>
       </div>
       <button type="submit">Register</button>
-      <div class="login-link">Have an account? <a href="/login">Log in</a></div>
+      <div class="login-link">Have an account? <a href="/studentLogin">Log in</a></div>
     </form>
   </div>
 
-  <script defer src="js/signuplogin.js" charset="utf-8"></script>
+  <script defer src="js/studentSignuplogin.js" charset="utf-8"></script>
 </body>
 
 </html>

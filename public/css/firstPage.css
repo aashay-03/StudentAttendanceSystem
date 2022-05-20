@@ -1,0 +1,63 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  text-align: center;
+}
+
+.navbar {
+  background-color: #008ae6;
+  display: flex;
+  justify-content: space-between;
+  height: 76px;
+}
+
+.navbar h1 {
+  margin-left: 25px;
+  margin-top: 18.5px;
+  color: #fff;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 75px);
+}
+
+.box {
+  border: 1px solid transparent;
+  height: 50vh;
+  width: 40vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.teacher-box {
+  border-color: transparent #999999 transparent transparent;
+}
+
+.student-box {
+  border-color: transparent transparent transparent #999999;
+}
+
+button {
+  padding: 10px 20px;
+  border: 1px solid black;
+  outline: none;
+  margin: 13.5px 1px 13.5px 1px;
+  font-size: 1rem;
+  border-radius: 5px;
+  background-color: #efefef;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #e0ebeb;
+}

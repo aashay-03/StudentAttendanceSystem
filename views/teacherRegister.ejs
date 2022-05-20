@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Teacher Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/teacherRegister.css">
+</head>
+
+<body>
+  <h1 class="heading">Teacher Register</h1>
+  <div class="register-box">
+    <%- include('partials/errorMsgs') %>
+    <form class="register-form" action="/teacherRegister" method="POST">
+      <input type="text" name="teacherName" placeholder="Name" required autofocus autocomplete="off" spellcheck="false">
+      <input type="email" name="username" placeholder="Email" required autocomplete="off" spellcheck="false">
+      <div class="password-field">
+        <input onkeyup="trigger()" class="pass" type="password" name="password" placeholder="Password" required autocomplete="off" spellcheck="false">
+        <span class="showBtn"><img class="eye-image" src="images/eye.png" alt="SHOW"></span>
+      </div>
+      <input type="text" name="collegeCode" placeholder="College Code" required autocomplete="off" spellcheck="false">
+      <input class="hidden-input" type="hidden" name="facultyCode" value="">
+      <div class="custom-select">
+        <select>
+          <option value="0">Select Faculty Code</option>
+          <option value="1">CDG</option>
+          <option value="2">CPS</option>
+          <option value="3">DKD</option>
+          <option value="4">FAG</option>
+          <option value="5">MAK</option>
+          <option value="6">MNG</option>
+          <option value="7">MSB</option>
+          <option value="8">OAK</option>
+          <option value="9">PMA</option>
+          <option value="10">PSJ</option>
+          <option value="11">SAK</option>
+          <option value="12">TSN</option>
+        </select>
+      </div>
+      <button type="submit">Register</button>
+      <div class="login-link">Have an account? <a href="/teacherLogin">Log in</a></div>
+    </form>
+  </div>
+
+  <script defer src="js/teacherSignuplogin.js" charset="utf-8"></script>
+</body>
+
+</html>

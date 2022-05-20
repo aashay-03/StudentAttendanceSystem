@@ -9,6 +9,7 @@ const flash = require("connect-flash");
 const path = require("path");
 const fileUpload = require("express-fileupload");
 const cloudinary = require("cloudinary").v2;
+const LocalStrategy = require('passport-local').Strategy;
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -46,6 +47,7 @@ app.use(function(req, res, next) {
   next();
 });
 
+const college_code = process.env.COLLEGE_CODE;
 const mongo_database = process.env.MONGO_REMOTE;
 
 mongoose.connect(`${mongo_database}`, {
@@ -55,13 +57,13 @@ mongoose.connect(`${mongo_database}`, {
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 
-
-const userSchema = new mongoose.Schema({
+const studentSchema = new mongoose.Schema({
   email: String,
   password: String,
   studentName: String,
   enrollmentno: String,
   branch: String,
+  role: String,
   createdAt: {
     type: Date,
     default: Date.now
@@ -107,48 +109,105 @@ const teacherMessageSchema = new mongoose.Schema({
   currTime: String
 });
 
-userSchema.plugin(passportLocalMongoose);
+const teacherSchema = new mongoose.Schema({
+  email: String,
+  password: String,
+  teacherName: String,
+  facultyCode: String,
+  role: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
 
-const User = mongoose.model("user", userSchema);
+studentSchema.plugin(passportLocalMongoose);
+teacherSchema.plugin(passportLocalMongoose);
+
+const Student = mongoose.model("student", studentSchema);
 const UploadedImages = mongoose.model("uploadedimages", uploadedImagesSchema);
 const Validateattendance = mongoose.model("validateattendance", validateAttendanceSchema);
 const Attendance = mongoose.model("attendance", attendanceSchema);
 const Teachermessage = mongoose.model("teachermessage", teacherMessageSchema);
+const Teacher = mongoose.model("teacher", teacherSchema);
 
-passport.use(User.createStrategy());
+passport.use("student-local", new LocalStrategy(Student.authenticate()));
+passport.use("teacher-local", new LocalStrategy(Teacher.authenticate()));
 
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
 
 passport.deserializeUser(function(user, done) {
-  done(null, user);
+  if(user!=null)
+    done(null,user);
 });
 
-app.get("/login", ensureGuest, function(req, res) {
-  res.render("login");
+app.get("/studentLogin", ensureGuestStudent, function(req, res) {
+  res.render("studentLogin");
 });
 
-app.get("/register", ensureGuest, function(req, res) {
-  res.render("register");
+app.get("/studentRegister", ensureGuestStudent, function(req, res) {
+  res.render("studentRegister");
 });
 
-app.get("/", ensureAuth, function(req, res) {
+app.get("/teacherLogin", ensureGuestTeacher, function(req, res) {
+  res.render("teacherLogin");
+});
+
+app.get("/teacherRegister", ensureGuestTeacher, function(req, res) {
+  res.render("teacherRegister");
+});
+
+app.get("/", function(req, res) {
+  try {
+    const currUser = req.user;
+    console.log(currUser);
+    try {
+      const my_user = currUser.role;
+      console.log(my_user);
+      if(my_user === "Teacher"){
+        res.redirect("/teacherHome");
+      }else{
+        res.redirect("/studentHome");
+      }
+    } catch (e) {
+      res.render("firstPage");
+    }
+  } catch (e) {
+    res.render("firstPage");
+  }
+});
+
+app.post("/", function(req, res) {
+  console.log(req.body.button);
+  if(req.body.button === "teacher"){
+    res.redirect("teacherLogin");
+  }else{
+    res.redirect("studentLogin");
+  }
+});
+
+app.get("/studentHome", ensureAuthStudent, function(req, res) {
   const currUser = req.user._id;
   UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
     if(result === null){
       res.redirect("/uploadimages");
     }else{
-      res.render("home", {studentName: req.user.studentName, enrollmentno: req.user.enrollmentno, branch: req.user.branch, username: req.user.username, imageUploaded: result.firstImagePath});
+      res.render("studentHome", {studentName: req.user.studentName, enrollmentno: req.user.enrollmentno, branch: req.user.branch, username: req.user.username, imageUploaded: result.firstImagePath});
     }
   });
 });
 
-app.get("/uploadimages", function(req, res) {
+app.get("/teacherHome", ensureAuthTeacher, function(req, res) {
+  res.render("teacherHome", {teacherName: req.user.teacherName});
+});
+
+app.get("/uploadimages", ensureAuthStudent, function(req, res) {
   const currUser = req.user._id;
   UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
     if(result === null){
-      User.findOne({_id: currUser}, function(err, result) {
+      Student.findOne({_id: currUser}, function(err, result) {
         if (err) {
           console.log(err);
         } else {
@@ -156,12 +215,12 @@ app.get("/uploadimages", function(req, res) {
         }
       });
     }else{
-      res.redirect("/");
+      res.redirect("/studentHome");
     }
   });
 });
 
-app.post("/", function(req, res) {
+app.post("/studentHome", function(req, res) {
   console.log(req.body);
   const currUser = req.body.username;
   let errors = [];
@@ -169,7 +228,7 @@ app.post("/", function(req, res) {
     errors.push({msg: "Please Select Subject Code"});
   }
   if(errors.length > 0){
-    res.render("home", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: currUser, imageUploaded: req.body.imageUploaded});
+    res.render("studentHome", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: currUser, imageUploaded: req.body.imageUploaded});
   }else{
     const d = new Date();
     let todaysDate = "";
@@ -237,35 +296,39 @@ app.post("/", function(req, res) {
   }
 });
 
-// app.get("/viewattendance", async function(req, res) {
-// let docs = await Attendance.aggregate([
-//   {
-//     $group: {
-//       _id: {
-//         studentName: "$studentName",
-//         enrollmentno: "$enrollmentno",
-//         branch: "$branch",
-//         subjectCode: "$subjectCode",
-//         facultyCode: "$facultyCode",
-//         todaysDate: "$todaysDate"
-//       },
-//       doc: {
-//         $last: "$$ROOT"
-//       }
-//     }
-//   },
-//   {
-//     $replaceRoot: {
-//       newRoot: "$doc"
-//     }
-//   }
-// ]);
-// console.log(docs.length);
-// res.send("Hello!");
-// });
+app.post("/viewattendance", ensureAuthTeacher, async function(req, res) {
+let docs = await Attendance.aggregate([
+  {
+    $group: {
+      _id: {
+        studentName: "$studentName",
+        enrollmentno: "$enrollmentno",
+        branch: "$branch",
+        subjectCode: "$subjectCode",
+        facultyCode: "$facultyCode",
+        todaysDate: "$todaysDate"
+      },
+      doc: {
+        $last: "$$ROOT"
+      }
+    }
+  },
+  {
+    $replaceRoot: {
+      newRoot: "$doc"
+    }
+  }
+]);
+console.log(docs.length);
+res.send("Hello!");
+});
+
+app.post("/viewmessages", ensureAuthTeacher, function(req, res) {
+  res.send("View Messages sent by students");
+});
 
 app.post("/tryagain", function(req, res) {
-  res.redirect("/");
+  res.redirect("/studentHome");
 });
 
 app.post("/pushattendance", function(req, res) {
@@ -395,7 +458,7 @@ app.post("/messageTeacher", function(req, res) {
   res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
 });
 
-app.post("/register", function(req, res) {
+app.post("/studentRegister", function(req, res) {
   console.log(req.body);
   const email = req.body.username;
   const studentName = req.body.studentName;
@@ -409,27 +472,27 @@ app.post("/register", function(req, res) {
     errors.push({msg: "Password should not exceed 15 characters"});
   }
   if (errors.length > 0) {
-    res.render("register", {errors, studentName, email, enrollmentno, branch});
+    res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
   } else {
     if (req.body.enrollmentno.length != 11) {
       errors.push({msg: "Enrollment Number should have 11 digits"});
     }
     if (errors.length > 0) {
-      res.render("register", {errors, studentName, email, enrollmentno, branch});
+      res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
     } else {
       if (req.body.enrollmentno.match(/^[0-9]+$/) == null) {
         errors.push({msg: "Enrollment Number should consist of digits"});
       }
       if (errors.length > 0) {
-        res.render("register", {errors, studentName, email, enrollmentno, branch});
+        res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
       } else {
         if (req.body.branch === "") {
           errors.push({msg: "Please Select branch"});
         }
         if (errors.length > 0) {
-          res.render("register", {errors, studentName, email, enrollmentno, branch});
+          res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
         } else {
-          User.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
+          Student.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
             if(err){
               console.log(err);
             }else{
@@ -437,14 +500,14 @@ app.post("/register", function(req, res) {
                 errors.push({msg: "Invalid Enrollment Number"});
               }
               if (errors.length > 0) {
-                res.render("register", {errors, studentName, email, enrollmentno, branch});
+                res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
               }else{
-                User.register({username: req.body.username, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch}, req.body.password, function(err, user) {
+                Student.register({username: req.body.username, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, role: "Student"}, req.body.password, function(err, user) {
                   if (err) {
                     errors.push({msg: "Email is already registered"})
-                    res.render("register", {errors, studentName,email, enrollmentno, branch});
+                    res.render("studentRegister", {errors, studentName,email, enrollmentno, branch});
                   } else {
-                    passport.authenticate("local")(req, res, function() {
+                    passport.authenticate("student-local")(req, res, function() {
                       res.redirect("/uploadimages");
                     });
                   }
@@ -458,30 +521,101 @@ app.post("/register", function(req, res) {
   }
 });
 
-app.post("/login", passport.authenticate("local", {
-  successRedirect: "/",
-  failureRedirect: "/login",
+app.post("/teacherRegister", function(req, res) {
+  console.log(req.body);
+  const email = req.body.username;
+  const teacherName = req.body.teacherName;
+  const facultyCode = req.body.facultyCode;
+  let errors = [];
+  if(req.body.facultyCode === ""){
+    errors.push({msg: "Please Select Faculty Code"});
+  }
+  if(errors.length > 0){
+    res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+  }else{
+    if (req.body.password.length < 6) {
+      errors.push({msg: "Password should be atleast 6 characters"});
+    }
+    if (req.body.password.length > 15) {
+      errors.push({msg: "Password should not exceed 15 characters"});
+    }
+    if(errors.length > 0){
+      res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+    }else{
+      if(req.body.collegeCode != college_code){
+        errors.push({msg: "Incorrect College Code"});
+      }
+      if(errors.length > 0){
+        res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+      }else{
+        Teacher.register({username: req.body.username, teacherName: req.body.teacherName, facultyCode: req.body.facultyCode, role: "Teacher"}, req.body.password, function(err, user) {
+          if (err) {
+            errors.push({msg: "Email is already registered"})
+            res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+          } else {
+            passport.authenticate("teacher-local")(req, res, function() {
+              res.redirect("/teacherHome");
+            });
+          }
+        });
+      }
+    }
+  }
+});
+
+app.post("/studentLogin", passport.authenticate("student-local", {
+  successRedirect: "/studentHome",
+  failureRedirect: "/studentLogin",
   failureFlash: true
 }));
 
-app.get("/logout", ensureAuth, function(req, res) {
+app.post("/teacherLogin", passport.authenticate("teacher-local", {
+  successRedirect: "/teacherHome",
+  failureRedirect: "/teacherLogin",
+  failureFlash: true
+}));
+
+app.get("/studentLogout", ensureAuthStudent, function(req, res) {
   req.logout();
   req.flash('success_msg', 'You are logged out')
-  res.redirect("/login");
+  res.redirect("/studentLogin");
 });
 
-function ensureAuth(req, res, next) {
+app.get("/teacherLogout", ensureAuthTeacher, function(req, res) {
+  req.logout();
+  req.flash("success_msg", "You are logged out");
+  res.redirect("/teacherLogin");
+});
+
+function ensureAuthStudent(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   } else {
     req.flash("error_msg", "Please login to view this page");
-    res.redirect("/login");
+    res.redirect("/studentLogin");
   }
 }
 
-function ensureGuest(req, res, next) {
+function ensureGuestStudent(req, res, next) {
   if (req.isAuthenticated()) {
-    res.redirect("/");
+    res.redirect("/studentHome");
+  } else {
+    return next();
+  }
+}
+
+function ensureAuthTeacher(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
+    req.flash("error_msg", "Please login to view this page");
+    res.redirect("/teacherLogin");
+  }
+}
+
+function ensureGuestTeacher(req, res, next) {
+  if (req.isAuthenticated()) {
+    res.redirect("/teacherHome");
   } else {
     return next();
   }

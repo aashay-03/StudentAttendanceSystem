@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Home | Face Recognition</title>
+  <link rel="stylesheet" href="css/teacherHome.css">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <h1 class="nameOfTeacher">Welcome <%= teacherName %>!</h1>
+    <a class="tooltip" href="/teacherLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+  </div>
+
+  <div class="container">
+    <form class="view-attendance-form" action="/viewattendance" method="POST">
+      <button type="submit" name="button">View Attendance</button>
+    </form>
+    <form class="view-messages-form" action="/viewmessages" method="POST">
+      <button type="submit" name="button">View Messages</button>
+    </form>
+  </div>
+
+</body>
+
+</html>
