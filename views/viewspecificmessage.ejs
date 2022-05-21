@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Message</title>
+    <link rel="stylesheet" href="css/viewspecificmessage.css">
+  </head>
+  <body>
+    <div class="navbar">
+      <h1 class="nameOfTeacher">Welcome <%= teacherName %>!</h1>
+      <a class="tooltip" href="/teacherLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+    </div>
+
+    <div class="container">
+      <div class="nameOfStudent">
+        <%=msg.studentName%>
+      </div>
+      <div class="enrollnum">
+        <%=msg.enrollmentno%>
+      </div>
+      <div class="studentBranch">
+        <%=msg.branch%>
+      </div>
+      <div class="msgDate">
+        <%=msg.todaysDate%>
+      </div>
+      <div class="msgTime">
+        <%=msg.currTime%>
+      </div>
+      <div class="main-msg">
+        <%=msg.message%>
+      </div>
+      <form action="/showMessages" method="POST">
+        <button type="submit" name="button">BACK</button>
+        <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+        <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+        <input type="hidden" name="showOnlyUnread" value="<%=showOnlyUnread%>">
+        <input type="hidden" name="branch" value="<%=branch%>">
+      </form>
+    </div>
+  </body>
+</html>

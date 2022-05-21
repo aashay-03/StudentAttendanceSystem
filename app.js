@@ -104,9 +104,14 @@ const teacherMessageSchema = new mongoose.Schema({
   subjectCode: String,
   facultyCode: String,
   message: String,
+  status: String,
   currMonth: String,
   todaysDate: String,
-  currTime: String
+  currTime: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 const teacherSchema = new mongoose.Schema({
@@ -114,6 +119,7 @@ const teacherSchema = new mongoose.Schema({
   password: String,
   teacherName: String,
   facultyCode: String,
+  subjectCode: String,
   role: String,
   createdAt: {
     type: Date,
@@ -200,7 +206,7 @@ app.get("/studentHome", ensureAuthStudent, function(req, res) {
 });
 
 app.get("/teacherHome", ensureAuthTeacher, function(req, res) {
-  res.render("teacherHome", {teacherName: req.user.teacherName});
+  res.render("teacherHome", {teacherName: req.user.teacherName, subjectCode: req.user.subjectCode, facultyCode: req.user.facultyCode});
 });
 
 app.get("/uploadimages", ensureAuthStudent, function(req, res) {
@@ -324,11 +330,126 @@ res.send("Hello!");
 });
 
 app.post("/viewmessages", ensureAuthTeacher, function(req, res) {
-  res.send("View Messages sent by students");
+  console.log(req.body);
+  let date = new Date();
+  date.setDate(date.getDate() - 15);
+  Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Unread", "createdAt": {"$gte": date}}, function(err, unreadMessages){
+    if(err){
+      console.log(err);
+    }else{
+      Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Read", "createdAt": {"$gte": date}}, function(err, readMessages){
+        if(err){
+          console.log(err);
+        }else{
+          console.log(req.body.teacherName);
+          res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: "Select Branch"});
+        }
+      });
+    }
+  });
+});
+
+app.post("/showMessages", function(req, res) {
+  console.log(req.body);
+  let date = new Date();
+  date.setDate(date.getDate() - 15);
+  let branchSelected;
+  if(req.body.branch === "All Branches"){
+    req.body.branch = "";
+  }
+  if(req.body.branch === ""){
+    branchSelected = "Select Branch";
+    if(req.body.showOnlyUnread === "on" || req.body.showOnlyUnread === "checked"){
+      Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Unread", "createdAt": {"$gte": date}}, function(err, unreadMessages){
+        if(err){
+          console.log(err);
+        }else{
+          Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Read", "createdAt": {"$gte": date}}, function(err, readMessages){
+            if(err){
+              console.log(err);
+            }else{
+              res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: [], key: 0, checked: "checked", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: branchSelected});
+            }
+          });
+        }
+      });
+    }else{
+      Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Unread", "createdAt": {"$gte": date}}, function(err, unreadMessages){
+        if(err){
+          console.log(err);
+        }else{
+          Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Read", "createdAt": {"$gte": date}}, function(err, readMessages){
+            if(err){
+              console.log(err);
+            }else{
+              console.log(req.body.teacherName);
+              res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: branchSelected});
+            }
+          });
+        }
+      });
+    }
+  }else{
+    branchSelected = req.body.branch;
+    if(req.body.showOnlyUnread === "on" || req.body.showOnlyUnread === "checked"){
+      Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branch: req.body.branch, status: "Unread", "createdAt": {"$gte": date}}, function(err, unreadMessages){
+        if(err){
+          console.log(err);
+        }else{
+          Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branch: req.body.branch, status: "Read", "createdAt": {"$gte": date}}, function(err, readMessages){
+            if(err){
+              console.log(err);
+            }else{
+              res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: [], key: 0, checked: "checked", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, branchValue: branchSelected});
+            }
+          });
+        }
+      });
+    }else{
+      Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branch: req.body.branch, status: "Unread", "createdAt": {"$gte": date}}, function(err, unreadMessages){
+        if(err){
+          console.log(err);
+        }else{
+          Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branch: req.body.branch, status: "Read", "createdAt": {"$gte": date}}, function(err, readMessages){
+            if(err){
+              console.log(err);
+            }else{
+              console.log(req.body.teacherName);
+              res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, branchValue: branchSelected});
+            }
+          });
+        }
+      });
+    }
+  }
+});
+
+app.post("/viewspecificmessage", function(req, res) {
+  console.log(req.body);
+  if(req.body.branch === "All Branches"){
+    req.body.branch = "";
+  }
+  Teachermessage.updateOne({_id: req.body.messageId}, {status: "Read"}, function(err, result) {
+    if(err){
+      console.log(err);
+    }else{
+      Teachermessage.findOne({_id: req.body.messageId}, function(err, result) {
+        if(err){
+          console.log(err);
+        }else{
+          res.render("viewspecificmessage", {teacherName: req.body.teacherName, subjectCode:req.body.subjectCode, facultyCode: req.body.facultyCode, msg: result, showOnlyUnread: req.body.showOnlyUnread, branch: req.body.branch});
+        }
+      });
+    }
+  });
 });
 
 app.post("/tryagain", function(req, res) {
   res.redirect("/studentHome");
+});
+
+app.post("/takemehome", function(req, res) {
+  res.redirect("/teacherHome");
 });
 
 app.post("/pushattendance", function(req, res) {
@@ -450,6 +571,7 @@ app.post("/messageTeacher", function(req, res) {
     subjectCode: req.body.subjectCode,
     facultyCode: req.body.facultyCode,
     message: req.body.messageForTeacher,
+    status: "Unread",
     currMonth: month,
     todaysDate: todaysDate,
     currTime: currTime
@@ -526,6 +648,7 @@ app.post("/teacherRegister", function(req, res) {
   const email = req.body.username;
   const teacherName = req.body.teacherName;
   const facultyCode = req.body.facultyCode;
+  const subjectCode = req.body.subjectCode;
   let errors = [];
   if(req.body.facultyCode === ""){
     errors.push({msg: "Please Select Faculty Code"});
@@ -548,7 +671,7 @@ app.post("/teacherRegister", function(req, res) {
       if(errors.length > 0){
         res.render("teacherRegister", {errors, teacherName, email, facultyCode});
       }else{
-        Teacher.register({username: req.body.username, teacherName: req.body.teacherName, facultyCode: req.body.facultyCode, role: "Teacher"}, req.body.password, function(err, user) {
+        Teacher.register({username: req.body.username, teacherName: req.body.teacherName, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode, role: "Teacher"}, req.body.password, function(err, user) {
           if (err) {
             errors.push({msg: "Email is already registered"})
             res.render("teacherRegister", {errors, teacherName, email, facultyCode});

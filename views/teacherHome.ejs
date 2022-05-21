@@ -19,6 +19,9 @@
       <button type="submit" name="button">View Attendance</button>
     </form>
     <form class="view-messages-form" action="/viewmessages" method="POST">
+      <input type="hidden" name="teacherName" value="<%=teacherName%>">
+      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
       <button type="submit" name="button">View Messages</button>
     </form>
   </div>

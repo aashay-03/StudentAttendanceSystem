@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Messages</title>
+    <link rel="stylesheet" href="css/viewmessages.css">
+  </head>
+  <body>
+    <div class="navbar">
+      <h1 class="nameOfTeacher">Welcome <%= teacherName %>!</h1>
+      <a class="tooltip" href="/teacherLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+    </div>
+
+    <div class="container">
+      <h1 class="heading">MESSAGES</h1>
+      <% if(unreadMessages.length === 0 && readMessages.length === 0 && msgCount === 0){ %>
+          <h1 class="no-msg">No messages in the last 15 days.</h1>
+          <form action="/takemehome" method="POST">
+            <button type="submit" name="button">Home</button>
+          </form>
+      <% }else{ %>
+          <form class="myForm" action="/showMessages" method="POST">
+            <input class="hidden-input" type="hidden" name="branch" value="<%=branch%>">
+            <div class="custom-select">
+              <select>
+                <option value="0"><%=branchValue%></option>
+                <option value="1">All Branches</option>
+                <option value="2">CSE</option>
+                <option value="3">CST</option>
+                <option value="4">IT</option>
+                <option value="5">ITE</option>
+                <option value="6">ECE</option>
+                <option value="7">EEE</option>
+              </select>
+            </div>
+            <div class="unread-msgs">
+              <input class="show-only-unread" type="checkbox" name="showOnlyUnread" <%=checked%> onchange="this.form.submit()">
+              <label for="show-only-unread">Show unread messages</label>
+            </div>
+            <input type="hidden" name="teacherName" value="<%=teacherName%>">
+            <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+            <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+          </form>
+        <% if(unreadMessages.length === 0 && readMessages.length === 0 && msgCount != 0){ %>
+          <h1 class="no-unread-msg">No unread messages</h1>
+          <form action="/takemehome" method="POST">
+            <button type="submit" name="button">Home</button>
+          </form>
+        <% } %>
+            <div class="box">
+              <% for(var i=0; i<unreadMessages.length; i++){ %>
+                  <div class="message-card">
+                    <div id=<%=key%> class="nameOfStudent">
+                      <%=unreadMessages[i].studentName%>
+                    </div>
+                    <div class="enrollnum">
+                      <%=unreadMessages[i].enrollmentno%>
+                    </div>
+                    <div class="studentBranch">
+                      <%=unreadMessages[i].branch%>
+                    </div>
+                    <div class="msgDate">
+                      <%=unreadMessages[i].todaysDate%>
+                    </div>
+                    <div class="msgTime">
+                      <%=unreadMessages[i].currTime%>
+                    </div>
+                    <div class="msg">
+                      <%=unreadMessages[i].message%>
+                    </div>
+                    <p class="imp-info">Unread</p>
+                    <form class="message-form" action="/viewspecificmessage" method="POST">
+                      <input type="hidden" name="teacherName" value="<%=teacherName%>">
+                      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+                      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+                      <input type="hidden" name="messageId" value="<%=unreadMessages[i]._id%>">
+                      <input type="hidden" name="showOnlyUnread" value="<%=checked%>">
+                      <input type="hidden" name="branch" value="<%=branch%>">
+                      <button type="submit" name="button">View Message</button>
+                    </form>
+                    <%key++;%>
+                  </div>
+              <% } %>
+              <% for(var i=0; i<readMessages.length; i++){ %>
+                  <div class="message-card">
+                    <div id=<%=key%> class="nameOfStudent">
+                      <%=readMessages[i].studentName%>
+                    </div>
+                    <div class="enrollnum">
+                      <%=readMessages[i].enrollmentno%>
+                    </div>
+                    <div class="studentBranch">
+                      <%=readMessages[i].branch%>
+                    </div>
+                    <div class="msgDate">
+                      <%=readMessages[i].todaysDate%>
+                    </div>
+                    <div class="msgTime">
+                      <%=readMessages[i].currTime%>
+                    </div>
+                    <div class="msg">
+                      <%=readMessages[i].message%>
+                    </div>
+                    <p class="imp-info">Read</p>
+                    <form class="message-form" action="/viewspecificmessage" method="POST">
+                      <input type="hidden" name="teacherName" value="<%=teacherName%>">
+                      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+                      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+                      <input type="hidden" name="messageId" value="<%=readMessages[i]._id%>">
+                      <input type="hidden" name="showOnlyUnread" value="<%=checked%>">
+                      <input type="hidden" name="branch" value="<%=branch%>">
+                      <button type="submit" name="button">View Message</button>
+                    </form>
+                    <%key++;%>
+                  </div>
+              <% } %>
+            </div>
+      <% } %>
+    </div>
+
+    <script src="js/viewmessages.js" charset="utf-8"></script>
+  </body>
+</html>
