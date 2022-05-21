@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>View Attendance</title>
+  <link rel="stylesheet" href="css/viewAttendance.css">
+</head>
+
+<body>
+  <div class="navbar">
+    <h1 class="nameOfTeacher">Welcome <%= teacherName %>!</h1>
+    <a class="tooltip" href="/teacherLogout"><span class="tooltiptext">Logout</span><img class="logout-btn"
+        src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+  </div>
+
+  <div class="container">
+    <h1 class="heading">ATTENDANCE</h1>
+    <form class="view-attendance-form" action="/viewspecificattendance" method="POST">
+      <input class="hidden-input" type="hidden" name="branch" value="<%=branch%>">
+      <div class="branch-box">
+        <%- include('partials/errorMsgs') %>
+        <div class="custom-select">
+          <select>
+            <option value="0"><%=branchValue%></option>
+            <option value="1">CSE</option>
+            <option value="2">CST</option>
+            <option value="3">IT</option>
+            <option value="4">ITE</option>
+            <option value="5">ECE</option>
+            <option value="6">EEE</option>
+          </select>
+        </div>
+      </div>
+      <div class="date-select">
+        <label for="selectDate">Select Date:</label>
+        <input type="date" class="selectDate" name="attendanceDate" value="<%=dateSelected%>" min="2022-01-01" max="<%=todaysDate%>" required>
+      </div>
+      <input type="time" class="starting-time" name="startingRange" value="<%=startTime%>" required>
+      <input type="time" class="ending-time" name="endingRange" value="<%=endTime%>" required>
+      <button type="submit" name="button">Get Attendance</button>
+      <input type="hidden" name="teacherName" value="<%=teacherName%>">
+      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+    </form>
+
+    <% if(len === 0){ %>
+      <h1 class="no-attendance">No Attendance Found</h1>
+    <% }else{ %>
+      <div class="box">
+        <% if(attendanceOnTime.length != 0 || attendanceNotOnTime.length != 0){ %>
+          <div class="attendance-card">
+            <div class="sno">SNo.</div>
+            <div class="nameOfStudent">Student Name</div>
+            <div class="enrollnum">Enrollment Number</div>
+            <div class="attendance-time">Attendance Time</div>
+          </div>
+        <% } %>
+        <% for(var i=0; i<attendanceOnTime.length; i++){ %>
+          <div class="attendance-card">
+            <div class="sno"><%=key%></div>
+            <div class="nameOfStudent"><%=attendanceOnTime[i].studentName%></div>
+            <div class="enrollnum"><%=attendanceOnTime[i].enrollmentno%></div>
+            <div class="attendance-time green"><%=attendanceOnTime[i].currTime%></div>
+          </div>
+          <% key++; %>
+        <% } %>
+        <% for(var i=0; i<attendanceNotOnTime.length; i++){ %>
+          <div class="attendance-card">
+            <div class="sno"><%=key%></div>
+            <div class="nameOfStudent"><%=attendanceNotOnTime[i].studentName%></div>
+            <div class="enrollnum"><%=attendanceNotOnTime[i].enrollmentno%></div>
+            <div class="attendance-time red"><%=attendanceNotOnTime[i].currTime%></div>
+          </div>
+          <% key++; %>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+
+  <script src="js/viewAttendance.js" charset="utf-8"></script>
+</body>
+
+</html>

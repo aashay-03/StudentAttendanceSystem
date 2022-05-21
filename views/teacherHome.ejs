@@ -16,6 +16,9 @@
 
   <div class="container">
     <form class="view-attendance-form" action="/viewattendance" method="POST">
+      <input type="hidden" name="teacherName" value="<%=teacherName%>">
+      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
       <button type="submit" name="button">View Attendance</button>
     </form>
     <form class="view-messages-form" action="/viewmessages" method="POST">

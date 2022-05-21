@@ -93,7 +93,11 @@ const attendanceSchema = new mongoose.Schema({
   subjectCode: String,
   facultyCode: String,
   todaysDate: String,
-  currTime: String
+  currTime: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 const teacherMessageSchema = new mongoose.Schema({
@@ -238,14 +242,29 @@ app.post("/studentHome", function(req, res) {
   }else{
     const d = new Date();
     let todaysDate = "";
-    const date = d.getDate();
-    const month = d.getMonth() + 1;
-    const year = d.getFullYear();
+    let date = d.getDate();
+    if(date >= 1 && date <= 9){
+      date = "0" + date;
+    }
+    let month = d.getMonth() + 1;
+    if(month >= 1 && month <= 9){
+      month = "0" + month;
+    }
+    let year = d.getFullYear();
     todaysDate += date + "/" + month + "/" + year;
     let currTime = "";
-    const hour = d.getHours();
-    const minute = d.getMinutes();
-    const second = d.getSeconds();
+    let hour = d.getHours();
+    if(hour >= 0 && hour <= 9){
+      hour = "0" + hour;
+    }
+    let minute = d.getMinutes();
+    if(minute >= 0 && minute <= 9){
+      minute = "0" + minute;
+    }
+    let second = d.getSeconds();
+    if(second >= 0 && second <= 9){
+      second = "0" + second;
+    }
     currTime += hour + ":" + minute + ":" + second;
     Attendance.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, function(err, result) {
       if (err) {
@@ -302,31 +321,113 @@ app.post("/studentHome", function(req, res) {
   }
 });
 
-app.post("/viewattendance", ensureAuthTeacher, async function(req, res) {
-let docs = await Attendance.aggregate([
-  {
-    $group: {
-      _id: {
-        studentName: "$studentName",
-        enrollmentno: "$enrollmentno",
-        branch: "$branch",
-        subjectCode: "$subjectCode",
-        facultyCode: "$facultyCode",
-        todaysDate: "$todaysDate"
-      },
-      doc: {
-        $last: "$$ROOT"
+app.post("/viewattendance", ensureAuthTeacher, function(req, res) {
+  const d = new Date();
+  let todaysDate = "";
+  let date = d.getDate();
+  if(date >= 1 && date <= 9){
+    date = "0" + date;
+  }
+  let month = d.getMonth() + 1;
+  if(month >= 1 && month <= 9){
+    month = "0" + month;
+  }
+  let year = d.getFullYear();
+  todaysDate += year + "-" + month + "-" + date;
+  res.render("viewAttendance", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branchValue: "Select Branch", branch: "Select Branch", todaysDate: todaysDate, attendanceOnTime: [], attendanceNotOnTime: [], key: 0, dateSelected: "", len: 1, startTime: "", endTime: ""});
+});
+
+app.post("/viewspecificattendance", async function(req, res) {
+  console.log(req.body);
+  const startTime = req.body.startingRange;
+  const endTime = req.body.endingRange;
+  let docs = await Attendance.aggregate([
+    {
+      $group: {
+        _id: {
+          studentName: "$studentName",
+          enrollmentno: "$enrollmentno",
+          branch: "$branch",
+          subjectCode: "$subjectCode",
+          facultyCode: "$facultyCode",
+          todaysDate: "$todaysDate"
+        },
+        doc: {
+          $last: "$$ROOT"
+        }
+      }
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$doc"
       }
     }
-  },
-  {
-    $replaceRoot: {
-      newRoot: "$doc"
-    }
+  ]);
+  const d = new Date();
+  let todaysDate = "";
+  let date = d.getDate();
+  if(date >= 1 && date <= 9){
+    date = "0" + date;
   }
-]);
-console.log(docs.length);
-res.send("Hello!");
+  let month = d.getMonth() + 1;
+  if(month >= 1 && month <= 9){
+    month = "0" + month;
+  }
+  let year = d.getFullYear();
+  todaysDate += year + "-" + month + "-" + date;
+  let errors = [];
+  if(req.body.branch === "Select Branch"){
+    errors.push({msg: "Please Select Branch"});
+  }
+  if(errors.length > 0){
+    res.render("viewAttendance", {errors, teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branchValue: "Select Branch", branch: "Select Branch", todaysDate: todaysDate, attendanceOnTime: [], attendanceNotOnTime: [] ,key: 0, dateSelected: req.body.attendanceDate, len: 1, startTime: startTime, endTime: endTime});
+  }else{
+    const myArr = req.body.attendanceDate.split("-");
+    let attDate = "";
+    let attDay = parseInt(myArr[2]);
+    if(attDate >= 1 && attDate <= 9){
+      attDate = "0" + attDate;
+    }
+    let attMonth = parseInt(myArr[1]);
+    if(attMonth >= 1 && attMonth <= 9){
+      attMonth = "0" + attMonth;
+    }
+    let attYear = parseInt(myArr[0]);
+    attDate += attDay + "/" + attMonth + "/" + attYear;
+    console.log(attDate);
+    // console.log(docs);
+    let startingTime = req.body.startingRange;
+    startingTime += ":00";
+    let endingTime = req.body.endingRange;
+    endingTime += ":00";
+    let firstDate = "" + todaysDate + " ";
+    firstDate += startingTime;
+    let secondDate = "" + todaysDate + " ";
+    secondDate += endingTime;
+    const firstDateFinal = new Date(firstDate);
+    const secondDateFinal = new Date(secondDate);
+    console.log(firstDateFinal);
+    console.log(secondDateFinal);
+    const finalAttendance = docs.filter(function(el) {
+      return el.subjectCode === req.body.subjectCode &&
+             el.facultyCode === req.body.facultyCode &&
+             el.branch === req.body.branch &&
+             el.todaysDate === attDate;
+    });
+    finalAttendance.sort(function(a, b) {
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
+    console.log(finalAttendance);
+    const onTimeAttendance = finalAttendance.filter(function(el) {
+      return el.createdAt >= firstDateFinal &&
+             el.createdAt <= secondDateFinal;
+    });
+    const notOnTimeAttendance = finalAttendance.filter(function(el) {
+      return el.createdAt < firstDateFinal ||
+             el.createdAt > secondDateFinal;
+    });
+    res.render("viewAttendance", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branchValue: req.body.branch, branch: req.body.branch, todaysDate: todaysDate, attendanceOnTime: onTimeAttendance, attendanceNotOnTime: notOnTimeAttendance, key: 1, dateSelected: req.body.attendanceDate, len: finalAttendance.length, startTime: startTime, endTime: endTime});
+  }
 });
 
 app.post("/viewmessages", ensureAuthTeacher, function(req, res) {
@@ -456,14 +557,29 @@ app.post("/pushattendance", function(req, res) {
   console.log(req.body);
   const d = new Date();
   let todaysDate = "";
-  const date = d.getDate();
-  const month = d.getMonth() + 1;
-  const year = d.getFullYear();
+  let date = d.getDate();
+  if(date >= 0 && date <= 9){
+    date = "0" + date;
+  }
+  let month = d.getMonth() + 1;
+  if(month >= 1 && month <= 9){
+    month = "0" + month;
+  }
+  let year = d.getFullYear();
   todaysDate += date + "/" + month + "/" + year;
   let currTime = "";
-  const hour = d.getHours();
-  const minute = d.getMinutes();
-  const second = d.getSeconds();
+  let hour = d.getHours();
+  if(hour >= 0 && hour <= 9){
+    hour = "0" + hour;
+  }
+  let minute = d.getMinutes();
+  if(minute >= 0 && minute <= 9){
+    minute = "0" + minute;
+  }
+  let second = d.getSeconds();
+  if(second >= 0 && second <= 9){
+    second = "0" + second;
+  }
   currTime += hour + ":" + minute + ":" + second;
   Attendance.findOne({enrollmentno: req.body.enrollmentno, subjectCode: req.body.subjectCode, todaysDate: todaysDate}, function(err, result){
     if(err){
@@ -554,14 +670,29 @@ app.post("/messageTeacher", function(req, res) {
   console.log(req.body);
   const d = new Date();
   let todaysDate = "";
-  const date = d.getDate();
-  const month = d.getMonth() + 1;
-  const year = d.getFullYear();
+  let date = d.getDate();
+  if(date >= 1 && date <= 9){
+    date = "0" + date;
+  }
+  let month = d.getMonth() + 1;
+  if(month >= 1 && month <= 9){
+    month = "0" + month;
+  }
+  let year = d.getFullYear();
   todaysDate += date + "/" + month + "/" + year;
   let currTime = "";
-  const hour = d.getHours();
-  const minute = d.getMinutes();
-  const second = d.getSeconds();
+  let hour = d.getHours();
+  if(hour >= 0 && hour <= 9){
+    hour = "0" + hour;
+  }
+  let minute = d.getMinutes();
+  if(minute >= 0 && minute <= 9){
+    minute = "0" + minute;
+  }
+  let second = d.getSeconds();
+  if(second >= 0 && second <= 9){
+    second = "0" + second;
+  }
   currTime += hour + ":" + minute + ":" + second;
   const messageToTeacher = new Teachermessage({
     studentName: req.body.studentName,

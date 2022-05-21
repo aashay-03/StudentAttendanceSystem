@@ -1,0 +1,251 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  text-align: center;
+}
+
+.navbar {
+  background-color: #008ae6;
+  display: flex;
+  justify-content: space-between;
+  height: 76px;
+}
+
+.navbar h1 {
+  margin-left: 25px;
+  margin-top: 18.5px;
+  color: #fff;
+}
+
+.navbar .logout-btn {
+  width: 25px;
+  height: 25px;
+  margin-top: 25px;
+  margin-right: 25px;
+  text-decoration: none;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: #333333;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  top: 23.5px;
+  right: 108%;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltip .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent black;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.heading {
+  font-size: 3.5rem;
+  margin-top: 30px;
+}
+
+.branch-box button {
+  bottom: -16px;
+  left: 330px;
+}
+
+.branch-box .alert-pop-up {
+  text-align: left;
+}
+
+input {
+  margin: 12px;
+  padding: 8px 8px 8px 6.5px;
+  width: 350px;
+  border-radius: 8px;
+  outline: none;
+  border: 1px solid black;
+  font-size: 1rem;
+}
+
+.custom-select {
+  position: relative;
+  width: 350px;
+  margin: 12px;
+  width: 350px;
+  border-radius: 8px;
+  outline: none;
+  border: 1px solid black;
+  font-size: 1rem;
+}
+
+.custom-select select {
+  display: none;
+}
+
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #000 transparent transparent transparent;
+}
+
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #000 transparent;
+  top: 7px;
+}
+
+.select-items div {
+  color: #000;
+  padding: 8px 16px 8px 6.5px;
+  border: 1px solid transparent;
+  border-color: rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.select-selected {
+  color: #000;
+  padding: 8px 16px 8px 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.select-items {
+  position: absolute;
+  background-color: #fff;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: #1e90ff;
+}
+
+.date-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-select label {
+  font-size: 1.3rem;
+}
+
+.view-attendance-form {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 95vw;
+}
+
+button {
+  padding: 10px 20px;
+  border: 1px solid black;
+  outline: none;
+  margin: 15px 1px 13.5px 1px;
+  font-size: 1rem;
+  border-radius: 5px;
+  background-color: #efefef;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #e0ebeb;
+}
+
+.no-attendance {
+  margin-top: 20vh;
+  color: blue;
+}
+
+.box {
+  width: 90vw;
+  margin-top: 60px;
+}
+
+.adjust-height {
+  margin-top: 220px;
+}
+
+.attendance-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+}
+
+.attendance-card div {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 12px;
+}
+
+.sno {
+  border: 1px solid transparent;
+  border-color: transparent rgba(0, 0, 0, 1) transparent transparent;
+  width: 5vw;
+}
+
+.nameOfStudent {
+  border: 1px solid transparent;
+  border-color: transparent rgba(0, 0, 0, 1) transparent transparent;
+  width: 30vw;
+}
+
+.enrollnum {
+  border: 1px solid transparent;
+  border-color: transparent rgba(0, 0, 0, 1) transparent transparent;
+  width: 40vw;
+}
+
+.attendance-time {
+  width: 15vw;
+}
+
+.green {
+  background-color: #5cd65c;
+}
+
+.red {
+  background-color: #ff3333;
+}
