@@ -35,15 +35,21 @@
         <% } %>
             <div class="box">
               <% for(var i=0; i<unreadMessages.length; i++){ %>
-                  <div class="message-card">
+                  <div class="message-card unread">
                     <div id=<%=key%> class="nameOfStudent">
-                      <%=unreadMessages[i].studentName%>
+                      Name: <%=unreadMessages[i].studentName%>
+                    </div>
+                    <div class="studentImage">
+                      <img src="<%=unreadMessages[i].imageUploaded%>" alt="Student Photo">
+                    </div>
+                    <div class="emailId">
+                      Email: <%=unreadMessages[i].username%>
                     </div>
                     <div class="enrollnum">
-                      <%=unreadMessages[i].enrollmentno%>
+                      Enrollment No.: <%=unreadMessages[i].enrollmentno%>
                     </div>
                     <div class="studentBranch">
-                      <%=unreadMessages[i].branch%>
+                      Branch: <%=unreadMessages[i].branch%>
                     </div>
                     <div class="msgDate">
                       <%=unreadMessages[i].todaysDate%>
@@ -52,7 +58,11 @@
                       <%=unreadMessages[i].currTime%>
                     </div>
                     <div class="msg">
-                      <%=unreadMessages[i].message%>
+                      <% if(unreadMessages[i].message.length > 100){ %>
+                        Message: <%=unreadMessages[i].message.substring(0, 100)%>.....
+                      <% }else{ %>
+                        Message: <%=unreadMessages[i].message%>
+                      <% } %>
                     </div>
                     <p class="imp-info">Unread</p>
                     <form class="message-form" action="/viewspecificbranchmessage" method="POST">
@@ -69,15 +79,21 @@
                   </div>
               <% } %>
               <% for(var i=0; i<readMessages.length; i++){ %>
-                  <div class="message-card">
+                  <div class="message-card read">
                     <div id=<%=key%> class="nameOfStudent">
-                      <%=readMessages[i].studentName%>
+                      Name: <%=readMessages[i].studentName%>
+                    </div>
+                    <div class="studentImage">
+                      <img src="<%=readMessages[i].imageUploaded%>" alt="Student Photo">
                     </div>
                     <div class="enrollnum">
-                      <%=readMessages[i].enrollmentno%>
+                      Enrollment No.: <%=readMessages[i].enrollmentno%>
+                    </div>
+                    <div class="emailId">
+                      Email: <%=readMessages[i].username%>
                     </div>
                     <div class="studentBranch">
-                      <%=readMessages[i].branch%>
+                      Branch: <%=readMessages[i].branch%>
                     </div>
                     <div class="msgDate">
                       <%=readMessages[i].todaysDate%>
@@ -86,7 +102,11 @@
                       <%=readMessages[i].currTime%>
                     </div>
                     <div class="msg">
-                      <%=readMessages[i].message%>
+                      <% if(readMessages[i].message.length > 100){ %>
+                        Message: <%=readMessages[i].message.substring(0, 100)%>...
+                      <% }else{ %>
+                        Message: <%=readMessages[i].message%>
+                      <% } %>
                     </div>
                     <p class="imp-info">Read</p>
                     <form class="message-form" action="/viewspecificbranchmessage" method="POST">

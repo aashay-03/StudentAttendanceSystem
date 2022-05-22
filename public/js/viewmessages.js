@@ -1,16 +1,6 @@
-const msgCard = document.querySelectorAll(".message-card");
-const status = document.querySelectorAll(".imp-info");
 const myInput = document.querySelector(".hidden-input");
 const myForm = document.querySelector(".myForm");
 const box = document.querySelector(".box");
-
-for(var i=0; i<msgCard.length; i++){
-  if(status[i].innerHTML === "Unread"){
-    msgCard[i].style.background = "#990033";
-  }else{
-    msgCard[i].style.background = "#00cc00";
-  }
-}
 
 var x, i, j, l, ll, selElmnt, a, b, c;
 x = document.getElementsByClassName("custom-select");

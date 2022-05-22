@@ -208,12 +208,92 @@ input {
   padding: 10px;
   width: 40vw;
   margin: 26px 26px;
-  border: 1px solid black;
+  border: 3px solid;
   line-height: 1.5;
+  border-radius: 16px;
+  position: relative;
+  height: 315px;
+}
+
+.unread {
+  color: white;
+  background-color: #f74f4f;
+  border-color: #990000;
+}
+
+.read {
+  color: white;
+  background-color: #5cd65c;
+  border-color: #006622;
+}
+
+.nameOfStudent {
+  position: absolute;
+  top: 45px;
+  left: 40px;
+}
+
+.studentImage {
+  position: absolute;
+  top: 25px;
+  right: 116px;
+}
+
+.emailId {
+  position: absolute;
+  top: 80px;
+  left: 40px;
+}
+
+.message-card img {
+  width: 65px;
+  height: 65px;
+  border-radius: 45px;
+}
+
+.enrollnum {
+  position: absolute;
+  top: 110px;
+  left: 350px;
+}
+
+.studentBranch {
+  position: absolute;
+  top: 140px;
+  left: 406px;
+}
+
+.msgDate {
+  position: absolute;
+  top: 110px;
+  left: 40px;
+}
+
+.msgTime {
+  position: absolute;
+  top: 140px;
+  left: 40px;
+}
+
+.msg {
+  position: absolute;
+  top: 180px;
+  left: 40px;
+  text-align: left;
 }
 
 .imp-info {
   display: none;
+}
+
+.message-form {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+  bottom: 10px;
 }
 
 button {

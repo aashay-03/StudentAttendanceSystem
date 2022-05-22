@@ -102,6 +102,7 @@ const attendanceSchema = new mongoose.Schema({
 
 const teacherMessageSchema = new mongoose.Schema({
   studentName: String,
+  username: String,
   enrollmentno: String,
   branch: String,
   imageUploaded: String,
@@ -204,7 +205,7 @@ app.get("/studentHome", ensureAuthStudent, function(req, res) {
     if(result === null){
       res.redirect("/uploadimages");
     }else{
-      res.render("studentHome", {studentName: req.user.studentName, enrollmentno: req.user.enrollmentno, branch: req.user.branch, username: req.user.username, imageUploaded: result.firstImagePath});
+      res.render("studentHome", {studentName: req.user.studentName, username: req.user.username, enrollmentno: req.user.enrollmentno, branch: req.user.branch, username: req.user.username, imageUploaded: result.firstImagePath});
     }
   });
 });
@@ -295,7 +296,7 @@ app.post("/studentHome", function(req, res) {
               } else {
                 const tryVar = result.tries + 1;
                 if (tryVar === 6) {
-                  res.render("attendanceFull", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
+                  res.render("attendanceFull", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
                 } else {
                   Validateattendance.findOneAndUpdate({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, {tries: tryVar, currTime: currTime}, function(err, result) {
                     if (err) {
@@ -453,6 +454,8 @@ app.post("/viewmessages", ensureAuthTeacher, function(req, res) {
         if(err){
           console.log(err);
         }else{
+          console.log(readMessages);
+          console.log(unreadMessages);
           console.log(req.body.teacherName);
           res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: "Select Branch"});
         }
@@ -751,7 +754,7 @@ app.post("/attendanceFull", function(req, res) {
       if(result.length === 3){
         res.render("messages", {msg: "Can't message teacher more than three times in a month.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
       }else{
-        res.render("messageTeacher", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
+        res.render("messageTeacher", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
       }
     }
   });
@@ -787,6 +790,7 @@ app.post("/messageTeacher", function(req, res) {
   currTime += hour + ":" + minute + ":" + second;
   const messageToTeacher = new Teachermessage({
     studentName: req.body.studentName,
+    username: req.body.username,
     enrollmentno: req.body.enrollmentno,
     branch: req.body.branch,
     imageUploaded: req.body.imageUploaded,
