@@ -5,21 +5,21 @@
   <meta charset="utf-8">
   <title>View Attendance</title>
   <link rel="stylesheet" href="css/viewAttendance.css">
+  <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
 </head>
 
 <body>
   <div class="navbar">
     <h1 class="nameOfTeacher">Welcome <%= teacherName %>!</h1>
-    <a class="tooltip" href="/teacherLogout"><span class="tooltiptext">Logout</span><img class="logout-btn"
-        src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+    <a class="tooltip" href="/teacherLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
   </div>
 
   <div class="container">
     <h1 class="heading">ATTENDANCE</h1>
+    <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
+    <%- include('partials/errorMsgs') %>
     <form class="view-attendance-form" action="/viewspecificattendance" method="POST">
       <input class="hidden-input" type="hidden" name="branch" value="<%=branch%>">
-      <div class="branch-box">
-        <%- include('partials/errorMsgs') %>
         <div class="custom-select">
           <select>
             <option value="0"><%=branchValue%></option>
@@ -31,13 +31,23 @@
             <option value="6">EEE</option>
           </select>
         </div>
-      </div>
-      <div class="date-select">
+
+      <div class="bound-together">
         <label for="selectDate">Select Date:</label>
         <input type="date" class="selectDate" name="attendanceDate" value="<%=dateSelected%>" min="2022-01-01" max="<%=todaysDate%>" required>
       </div>
-      <input type="time" class="starting-time" name="startingRange" value="<%=startTime%>" required>
-      <input type="time" class="ending-time" name="endingRange" value="<%=endTime%>" required>
+
+      <div class="myTime">
+        <div class="bound-together">
+          <label for="starting-time"><span>Accepted Time: </span>From: </label>
+          <input type="time" class="starting-time time-range" name="startingRange" value="<%=startTime%>" min="09:00" max="16:15" required>
+        </div>
+        <div class="bound-together">
+          <label for="ending-time">To: </label>
+          <input type="time" class="ending-time time-range" name="endingRange" value="<%=endTime%>" min="09:45" max="17:00" required>
+        </div>
+      </div>
+
       <button type="submit" name="button">Get Attendance</button>
       <input type="hidden" name="teacherName" value="<%=teacherName%>">
       <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
@@ -75,6 +85,16 @@
           <% key++; %>
         <% } %>
       </div>
+      <% if(attendanceOnTime.length != 0 || attendanceNotOnTime.length != 0){ %>
+        <form action="/viewbranchmessages" method="POST">
+          <button type="submit" name="button">View <%=branch%> Messages</button>
+          <input type="hidden" name="teacherName" value="<%=teacherName%>">
+          <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+          <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+          <input type="hidden" name="branch" value="<%=branch%>">
+          <input type="hidden" name="attendanceDate" value="<%=dateSelected%>">
+        </form>
+      <% } %>
     <% } %>
   </div>
 

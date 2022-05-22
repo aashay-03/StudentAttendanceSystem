@@ -341,6 +341,10 @@ app.post("/viewspecificattendance", async function(req, res) {
   console.log(req.body);
   const startTime = req.body.startingRange;
   const endTime = req.body.endingRange;
+  const startingArr = startTime.split(":");
+  const endingArr = endTime.split(":");
+  const checkStartingTime = (parseInt(startingArr[0]) * 3600) + (parseInt(startingArr[1]) * 60);
+  const checkEndingTime = (parseInt(endingArr[0]) * 3600) + (parseInt(endingArr[1]) * 60);
   let docs = await Attendance.aggregate([
     {
       $group: {
@@ -380,53 +384,60 @@ app.post("/viewspecificattendance", async function(req, res) {
     errors.push({msg: "Please Select Branch"});
   }
   if(errors.length > 0){
-    res.render("viewAttendance", {errors, teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branchValue: "Select Branch", branch: "Select Branch", todaysDate: todaysDate, attendanceOnTime: [], attendanceNotOnTime: [] ,key: 0, dateSelected: req.body.attendanceDate, len: 1, startTime: startTime, endTime: endTime});
+    res.render("viewAttendance", {errors, teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branchValue: "Select Branch", branch: "Select Branch", todaysDate: todaysDate, attendanceOnTime: [], attendanceNotOnTime: [], key: 0, dateSelected: req.body.attendanceDate, len: 1, startTime: startTime, endTime: endTime});
   }else{
-    const myArr = req.body.attendanceDate.split("-");
-    let attDate = "";
-    let attDay = parseInt(myArr[2]);
-    if(attDate >= 1 && attDate <= 9){
-      attDate = "0" + attDate;
+    if(checkEndingTime < checkStartingTime){
+      errors.push({msg: "Invalid Time Range"});
     }
-    let attMonth = parseInt(myArr[1]);
-    if(attMonth >= 1 && attMonth <= 9){
-      attMonth = "0" + attMonth;
+    if(errors.length > 0){
+      res.render("viewAttendance", {errors, teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branchValue: req.body.branch, branch: req.body.branch, todaysDate: todaysDate, attendanceOnTime: [], attendanceNotOnTime: [], key: 0, dateSelected: req.body.attendanceDate, len: 1, startTime: "", endTime: ""})
+    }else{
+      const myArr = req.body.attendanceDate.split("-");
+      let attDate = "";
+      let attDay = parseInt(myArr[2]);
+      if(attDate >= 1 && attDate <= 9){
+        attDate = "0" + attDate;
+      }
+      let attMonth = parseInt(myArr[1]);
+      if(attMonth >= 1 && attMonth <= 9){
+        attMonth = "0" + attMonth;
+      }
+      let attYear = parseInt(myArr[0]);
+      attDate += attDay + "/" + attMonth + "/" + attYear;
+      console.log(attDate);
+      // console.log(docs);
+      let startingTime = req.body.startingRange;
+      startingTime += ":00";
+      let endingTime = req.body.endingRange;
+      endingTime += ":00";
+      let firstDate = "" + req.body.attendanceDate + " ";
+      firstDate += startingTime;
+      let secondDate = "" + req.body.attendanceDate + " ";
+      secondDate += endingTime;
+      const firstDateFinal = new Date(firstDate);
+      const secondDateFinal = new Date(secondDate);
+      console.log(firstDateFinal);
+      console.log(secondDateFinal);
+      const finalAttendance = docs.filter(function(el) {
+        return el.subjectCode === req.body.subjectCode &&
+               el.facultyCode === req.body.facultyCode &&
+               el.branch === req.body.branch &&
+               el.todaysDate === attDate;
+      });
+      finalAttendance.sort(function(a, b) {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+      console.log(finalAttendance);
+      const onTimeAttendance = finalAttendance.filter(function(el) {
+        return el.createdAt >= firstDateFinal &&
+               el.createdAt <= secondDateFinal;
+      });
+      const notOnTimeAttendance = finalAttendance.filter(function(el) {
+        return el.createdAt < firstDateFinal ||
+               el.createdAt > secondDateFinal;
+      });
+      res.render("viewAttendance", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branchValue: req.body.branch, branch: req.body.branch, todaysDate: todaysDate, attendanceOnTime: onTimeAttendance, attendanceNotOnTime: notOnTimeAttendance, key: 1, dateSelected: req.body.attendanceDate, len: finalAttendance.length, startTime: startTime, endTime: endTime});
     }
-    let attYear = parseInt(myArr[0]);
-    attDate += attDay + "/" + attMonth + "/" + attYear;
-    console.log(attDate);
-    // console.log(docs);
-    let startingTime = req.body.startingRange;
-    startingTime += ":00";
-    let endingTime = req.body.endingRange;
-    endingTime += ":00";
-    let firstDate = "" + todaysDate + " ";
-    firstDate += startingTime;
-    let secondDate = "" + todaysDate + " ";
-    secondDate += endingTime;
-    const firstDateFinal = new Date(firstDate);
-    const secondDateFinal = new Date(secondDate);
-    console.log(firstDateFinal);
-    console.log(secondDateFinal);
-    const finalAttendance = docs.filter(function(el) {
-      return el.subjectCode === req.body.subjectCode &&
-             el.facultyCode === req.body.facultyCode &&
-             el.branch === req.body.branch &&
-             el.todaysDate === attDate;
-    });
-    finalAttendance.sort(function(a, b) {
-      return new Date(a.createdAt) - new Date(b.createdAt);
-    });
-    console.log(finalAttendance);
-    const onTimeAttendance = finalAttendance.filter(function(el) {
-      return el.createdAt >= firstDateFinal &&
-             el.createdAt <= secondDateFinal;
-    });
-    const notOnTimeAttendance = finalAttendance.filter(function(el) {
-      return el.createdAt < firstDateFinal ||
-             el.createdAt > secondDateFinal;
-    });
-    res.render("viewAttendance", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, branchValue: req.body.branch, branch: req.body.branch, todaysDate: todaysDate, attendanceOnTime: onTimeAttendance, attendanceNotOnTime: notOnTimeAttendance, key: 1, dateSelected: req.body.attendanceDate, len: finalAttendance.length, startTime: startTime, endTime: endTime});
   }
 });
 
@@ -448,6 +459,40 @@ app.post("/viewmessages", ensureAuthTeacher, function(req, res) {
       });
     }
   });
+});
+
+app.post("/showBranchMessages", function(req, res) {
+  console.log(req.body);
+  if(req.body.showOnlyUnread === "on" || req.body.showOnlyUnread === "checked"){
+    Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Unread", branch: req.body.branch, todaysDate: req.body.attendanceDate}, function(err, unreadMessages){
+      if(err){
+        console.log(err);
+      }else{
+        Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Read", branch: req.body.branch, todaysDate: req.body.attendanceDate}, function(err, readMessages){
+          if(err){
+            console.log(err);
+          }else{
+            res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: [], key: 0, checked: "checked", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: req.body.attendanceDate});
+          }
+        });
+      }
+    });
+  }else{
+    Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Unread", branch: req.body.branch, todaysDate: req.body.attendanceDate}, function(err, unreadMessages){
+      if(err){
+        console.log(err);
+      }else{
+        Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Read", branch: req.body.branch, todaysDate: req.body.attendanceDate}, function(err, readMessages){
+          if(err){
+            console.log(err);
+          }else{
+            console.log(req.body.teacherName);
+            res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: req.body.attendanceDate});
+          }
+        });
+      }
+    });
+  }
 });
 
 app.post("/showMessages", function(req, res) {
@@ -523,6 +568,52 @@ app.post("/showMessages", function(req, res) {
       });
     }
   }
+});
+
+app.post("/viewbranchmessages", function(req, res) {
+  console.log(req.body);
+  const myArr = req.body.attendanceDate.split("-");
+  let todaysDate = "";
+  let day = parseInt(myArr[2]);
+  if(day >= 1 && day <= 9){
+    day = "0" + day;
+  }
+  let month = parseInt(myArr[1]);
+  if(month >= 1 && month <= 9){
+    month = "0" + month;
+  }
+  let year = parseInt(myArr[0]);
+  todaysDate += day + "/" + month + "/" + year;
+  Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Unread", branch: req.body.branch, todaysDate: todaysDate}, function(err, unreadMessages){
+    if(err){
+      console.log(err);
+    }else{
+      Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Read", branch: req.body.branch, todaysDate: todaysDate}, function(err, readMessages){
+        if(err){
+          console.log(err);
+        }else{
+          console.log(req.body.teacherName);
+          res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: todaysDate});
+        }
+      });
+    }
+  });
+});
+
+app.post("/viewspecificbranchmessage", function(req, res) {
+  Teachermessage.updateOne({_id: req.body.messageId}, {status: "Read"}, function(err, result) {
+    if(err){
+      console.log(err);
+    }else{
+      Teachermessage.findOne({_id: req.body.messageId}, function(err, result) {
+        if(err){
+          console.log(err);
+        }else{
+          res.render("viewSpecificBranchMessage", {teacherName: req.body.teacherName, subjectCode:req.body.subjectCode, facultyCode: req.body.facultyCode, msg: result, showOnlyUnread: req.body.showOnlyUnread, branch: req.body.branch, attendanceDate: req.body.attendanceDate});
+        }
+      });
+    }
+  });
 });
 
 app.post("/viewspecificmessage", function(req, res) {

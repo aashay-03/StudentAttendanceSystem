@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Messages</title>
-    <link rel="stylesheet" href="css/viewmessages.css">
+    <link rel="stylesheet" href="css/viewBranchMessages.css">
     <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
   </head>
   <body>
@@ -16,22 +16,10 @@
       <h1 class="heading">MESSAGES</h1>
       <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
       <% if(unreadMessages.length === 0 && readMessages.length === 0 && msgCount === 0){ %>
-          <h1 class="no-msg">No messages in the last 15 days.</h1>
+          <h1 class="no-msg">No Messages Found</h1>
       <% }else{ %>
-          <form class="myForm" action="/showMessages" method="POST">
-            <input class="hidden-input" type="hidden" name="branch" value="<%=branch%>">
-            <div class="custom-select">
-              <select>
-                <option value="0"><%=branchValue%></option>
-                <option value="1">All Branches</option>
-                <option value="2">CSE</option>
-                <option value="3">CST</option>
-                <option value="4">IT</option>
-                <option value="5">ITE</option>
-                <option value="6">ECE</option>
-                <option value="7">EEE</option>
-              </select>
-            </div>
+          <form class="myForm" action="/showBranchMessages" method="POST">
+            <input type="text" name="branch" value="<%=branch%>" disabled>
             <div class="unread-msgs">
               <input class="show-only-unread" type="checkbox" name="showOnlyUnread" <%=checked%> onchange="this.form.submit()">
               <label for="show-only-unread">Show unread messages</label>
@@ -39,6 +27,8 @@
             <input type="hidden" name="teacherName" value="<%=teacherName%>">
             <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
             <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+            <input type="hidden" name="branch" value="<%=branch%>">
+            <input type="hidden" name="attendanceDate" value="<%=attendanceDate%>">
           </form>
         <% if(unreadMessages.length === 0 && readMessages.length === 0 && msgCount != 0){ %>
           <h1 class="no-unread-msg">No Unread Messages</h1>
@@ -65,13 +55,14 @@
                       <%=unreadMessages[i].message%>
                     </div>
                     <p class="imp-info">Unread</p>
-                    <form class="message-form" action="/viewspecificmessage" method="POST">
+                    <form class="message-form" action="/viewspecificbranchmessage" method="POST">
                       <input type="hidden" name="teacherName" value="<%=teacherName%>">
                       <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
                       <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
                       <input type="hidden" name="messageId" value="<%=unreadMessages[i]._id%>">
                       <input type="hidden" name="showOnlyUnread" value="<%=checked%>">
                       <input type="hidden" name="branch" value="<%=branch%>">
+                      <input type="hidden" name="attendanceDate" value="<%=attendanceDate%>">
                       <button type="submit" name="button">View Message</button>
                     </form>
                     <%key++;%>
@@ -98,13 +89,14 @@
                       <%=readMessages[i].message%>
                     </div>
                     <p class="imp-info">Read</p>
-                    <form class="message-form" action="/viewspecificmessage" method="POST">
+                    <form class="message-form" action="/viewspecificbranchmessage" method="POST">
                       <input type="hidden" name="teacherName" value="<%=teacherName%>">
                       <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
                       <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
                       <input type="hidden" name="messageId" value="<%=readMessages[i]._id%>">
                       <input type="hidden" name="showOnlyUnread" value="<%=checked%>">
                       <input type="hidden" name="branch" value="<%=branch%>">
+                      <input type="hidden" name="attendanceDate" value="<%=attendanceDate%>">
                       <button type="submit" name="button">View Message</button>
                     </form>
                     <%key++;%>
@@ -114,6 +106,6 @@
       <% } %>
     </div>
 
-    <script src="js/viewmessages.js" charset="utf-8"></script>
+    <script src="js/viewBranchMessages.js" charset="utf-8"></script>
   </body>
 </html>
