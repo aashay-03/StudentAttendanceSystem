@@ -65,6 +65,10 @@ body {
   justify-content: center;
 }
 
+.alert-pop-up {
+  text-align: left;
+}
+
 .image-container {
   margin: 10px 0px;
   position: relative;
@@ -138,4 +142,36 @@ input {
   border-radius: 5px;
   background: #4aabff;
   opacity: 0.3;
+}
+
+/* ############### Media Queries ############### */
+
+@media screen and (max-height: 720px) {
+  .instruction-heading {
+    position: absolute;
+    top: 30px;
+  }
+}
+
+@media screen and (max-height: 650px) {
+  .instruction-heading {
+    position: absolute;
+    top: 15px;
+  }
+}
+
+@media screen and (max-height: 600px), screen and (max-widtht: 1180px) {
+  .instruction-heading {
+    position: absolute;
+    top: 15px;
+    font-size: 1.8rem;
+  }
+}
+
+@media screen and (max-height: 700px), screen and (max-widtht: 1148px) {
+  .instruction-heading {
+    position: absolute;
+    top: 15px;
+    font-size: 1.8rem;
+  }
 }

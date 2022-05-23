@@ -9,7 +9,7 @@ const flash = require("connect-flash");
 const path = require("path");
 const fileUpload = require("express-fileupload");
 const cloudinary = require("cloudinary").v2;
-const LocalStrategy = require('passport-local').Strategy;
+const LocalStrategy = require("passport-local").Strategy;
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -41,9 +41,9 @@ app.use(fileUpload({
 }));
 
 app.use(function(req, res, next) {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error');
+  res.locals.success_msg = req.flash("success_msg");
+  res.locals.error_msg = req.flash("error_msg");
+  res.locals.error = req.flash("error");
   next();
 });
 
@@ -54,7 +54,7 @@ mongoose.connect(`${mongo_database}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
-  .then(() => console.log('MongoDB Connected'))
+  .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
 const studentSchema = new mongoose.Schema({
@@ -199,12 +199,25 @@ app.post("/", function(req, res) {
   }
 });
 
+// // ######## change the way not get request ##############
+//
+// app.get("/viewyourmessages", function(req, res) {
+//   UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
+//     if(err){
+//       console.log(err);
+//     }else{
+//       res.render("viewYourMessages", {studentName: req.user.studentName, imageUploaded: result.firstImagePath});
+//     }
+//   });
+// });
+
 app.get("/studentHome", ensureAuthStudent, function(req, res) {
   const currUser = req.user._id;
   UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
     if(result === null){
       res.redirect("/uploadimages");
     }else{
+      console.log(result);
       res.render("studentHome", {studentName: req.user.studentName, username: req.user.username, enrollmentno: req.user.enrollmentno, branch: req.user.branch, username: req.user.username, imageUploaded: result.firstImagePath});
     }
   });
@@ -222,7 +235,7 @@ app.get("/uploadimages", ensureAuthStudent, function(req, res) {
         if (err) {
           console.log(err);
         } else {
-          res.render("uploadimages", {studentName: result.studentName, enrollmentno: result.enrollmentno});
+          res.render("uploadImages", {studentName: result.studentName, enrollmentno: result.enrollmentno});
         }
       });
     }else{
@@ -705,7 +718,7 @@ app.post("/uploadimages", function(req, res) {
   const thirdImage = req.files.thirdImage;
   if((firstImage.md5 === secondImage.md5) || (firstImage.md5 === thirdImage.md5) || (secondImage.md5 === thirdImage.md5)){
     errors.push({msg: "All photos should be distinct"});
-    res.render("uploadimages", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno});
+    res.render("uploadImages", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno});
   }else{
     const imagesuploaded = new UploadedImages({
       enrollmentno: req.body.enrollmentno,
@@ -715,11 +728,19 @@ app.post("/uploadimages", function(req, res) {
     });
     imagesuploaded.save();
     const query = {enrollmentno: req.body.enrollmentno};
+    let img1 = false, img2 = false, img3 = false;
     cloudinary.uploader.upload(firstImage.tempFilePath, (err, result) => {
       const firstLink = result.url;
       UploadedImages.findOneAndUpdate(query, {firstImagePath: firstLink}, function(err, result){
         if(err){
           console.log(err);
+        }else{
+          img1 = true;
+          console.log("first");
+          if(img1 && img2 && img3){
+            console.log("final");
+            res.redirect("/studentHome");
+          }
         }
       });
     });
@@ -728,6 +749,13 @@ app.post("/uploadimages", function(req, res) {
       UploadedImages.findOneAndUpdate(query, {secondImagePath: secondLink}, function(err, result){
         if(err){
           console.log(err);
+        }else{
+          img2 = true;
+          console.log("second");
+          if(img1 && img2 && img3){
+            console.log("final");
+            res.redirect("/studentHome");
+          }
         }
       });
     });
@@ -736,10 +764,16 @@ app.post("/uploadimages", function(req, res) {
       UploadedImages.findOneAndUpdate(query, {thirdImagePath: thirdLink}, function(err, result){
         if(err){
           console.log(err);
+        }else{
+          img3 = true;
+          console.log("third");
+          if(img1 && img2 && img3){
+            console.log("final");
+            res.redirect("/studentHome");
+          }
         }
       });
     });
-    res.render("message", {msg: "Images Uploaded Successfully!", studentName: req.body.studentName});
   }
 });
 
@@ -813,58 +847,65 @@ app.post("/studentRegister", function(req, res) {
   const enrollmentno = req.body.enrollmentno;
   const branch = req.body.branch;
   let errors = [];
-  if (req.body.password.length < 6) {
-    errors.push({msg: "Password should be atleast 6 characters"});
-  }
-  if (req.body.password.length > 15) {
-    errors.push({msg: "Password should not exceed 15 characters"});
+  if (req.body.branch === "") {
+    errors.push({msg: "Please Select branch"});
   }
   if (errors.length > 0) {
     res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
-  } else {
-    if (req.body.enrollmentno.length != 11) {
-      errors.push({msg: "Enrollment Number should have 11 digits"});
+  }else{
+    if(/^[a-zA-Z]+$/.test(req.body.studentName) === false){
+      errors.push({msg: "Please enter correct name"});
     }
-    if (errors.length > 0) {
+    if(errors.length > 0){
       res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
-    } else {
-      if (req.body.enrollmentno.match(/^[0-9]+$/) == null) {
-        errors.push({msg: "Enrollment Number should consist of digits"});
+    }else{
+      if (req.body.password.length < 6) {
+        errors.push({msg: "Password should be atleast 6 characters"});
+      }
+      if (req.body.password.length > 15) {
+        errors.push({msg: "Password should not exceed 15 characters"});
       }
       if (errors.length > 0) {
         res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
       } else {
-        if (req.body.branch === "") {
-          errors.push({msg: "Please Select branch"});
+        if (req.body.enrollmentno.length != 11) {
+          errors.push({msg: "Enrollment Number should have 11 digits"});
         }
         if (errors.length > 0) {
           res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
         } else {
-          Student.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
-            if(err){
-              console.log(err);
-            }else{
-              if (result != null) {
-                errors.push({msg: "Invalid Enrollment Number"});
-              }
-              if (errors.length > 0) {
-                res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
-              }else{
-                Student.register({username: req.body.username, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, role: "Student"}, req.body.password, function(err, user) {
-                  if (err) {
-                    errors.push({msg: "Email is already registered"})
-                    res.render("studentRegister", {errors, studentName,email, enrollmentno, branch});
-                  } else {
-                    passport.authenticate("student-local")(req, res, function() {
-                      res.redirect("/uploadimages");
+          if (req.body.enrollmentno.match(/^[0-9]+$/) == null) {
+            errors.push({msg: "Enrollment Number should consist of digits only"});
+          }
+          if (errors.length > 0) {
+            res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+          } else {
+              Student.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
+                if(err){
+                  console.log(err);
+                }else{
+                  if (result != null) {
+                    errors.push({msg: "Invalid Enrollment Number"});
+                  }
+                  if (errors.length > 0) {
+                    res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+                  }else{
+                    Student.register({username: req.body.username, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, role: "Student"}, req.body.password, function(err, user) {
+                      if (err) {
+                        errors.push({msg: "Email is already registered"})
+                        res.render("studentRegister", {errors, studentName,email, enrollmentno, branch});
+                      } else {
+                        passport.authenticate("student-local")(req, res, function() {
+                          res.redirect("/uploadimages");
+                        });
+                      }
                     });
                   }
-                });
-              }
+                }
+              });
             }
-          });
+          }
         }
-      }
     }
   }
 });
@@ -926,7 +967,7 @@ app.post("/teacherLogin", passport.authenticate("teacher-local", {
 
 app.get("/studentLogout", ensureAuthStudent, function(req, res) {
   req.logout();
-  req.flash('success_msg', 'You are logged out')
+  req.flash("success_msg", "You are logged out");
   res.redirect("/studentLogin");
 });
 

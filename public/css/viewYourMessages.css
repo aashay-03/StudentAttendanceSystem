@@ -1,0 +1,91 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  text-align: center;
+}
+
+.navbar {
+  background-color: #008ae6;
+  display: flex;
+  justify-content: space-between;
+  height: 76px;
+}
+
+.navbar h1 {
+  margin-left: 25px;
+  margin-top: 18.5px;
+  color: #fff;
+}
+
+.navbar .profile-photo {
+  width: 65px;
+  height: 65px;
+  margin-top: 5px;
+  border-radius: 45px;
+}
+
+.left-side-box {
+  display: flex;
+  margin-left: 25px;
+}
+
+.navbar .logout-btn {
+  width: 25px;
+  height: 25px;
+  margin-top: 25px;
+  margin-right: 25px;
+  text-decoration: none;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: #333333;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  top: 23.5px;
+  right: 108%;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltip .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent black;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.heading {
+  font-size: 3.5rem;
+  margin-top: 30px;
+}

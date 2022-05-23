@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>View Message</title>
+    <link rel="stylesheet" href="css/viewYourMessages.css">
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="left-side-box">
+        <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
+        <h1 class="nameOfStudent">Welcome <%= studentName %>!</h1>
+      </div>
+      <a class="tooltip" href="/studentLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+    </div>
+
+    <div class="container">
+      <h1 class="heading">MESSAGES</h1>
+      <form class="myForm" action="/" method="POST">
+        <input class="hidden-input" type="hidden" name="facultyCode" value="<%=facultyCode%>">
+        <div class="custom-select">
+          <select>
+            <option value="0"><%=facultyCode%></option>
+            <option value="1">All Messages</option>
+            <option value="2"></option>
+            <option value="3"></option>
+            <option value="4"></option>
+            <option value="5"></option>
+            <option value="6"></option>
+            <option value="7"></option>
+            <option value="8"></option>
+            <option value="9"></option>
+            <option value="10"></option>
+            <option value="11"></option>
+            <option value="12"></option>
+            <option value="13"></option>
+          </select>
+        </div>
+        <div class="unread-msgs">
+          <input class="show-only-unread" type="checkbox" name="showOnlyUnread" <%=checked%> onchange="this.form.submit()">
+          <label for="show-only-unread">Show unread messages</label>
+        </div>
+        <input type="hidden" name="teacherName" value="<%=teacherName%>">
+        <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+        <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+      </form>
+    </div>
+  </body>
+</html>
