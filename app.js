@@ -290,7 +290,7 @@ app.post("/studentHome", function(req, res) {
                   if(err){
                     console.log(err);
                   }else{
-                    res.render("attendance", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, secondImage: result.secondImagePath, thirdImage: result.thirdImagePath});
+                    res.render("attendance", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath});
                   }
                 });
               } else {
@@ -307,7 +307,7 @@ app.post("/studentHome", function(req, res) {
                     if(err){
                       console.log(err);
                     }else{
-                      res.render("attendance", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, secondImage: result.secondImagePath, thirdImage: result.thirdImagePath});
+                      res.render("attendance", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath});
                     }
                   });
                 }

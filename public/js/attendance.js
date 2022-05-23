@@ -5,11 +5,8 @@ let tryAgainButton = document.querySelector(".try-again-btn");
 let message = document.querySelector(".msg-textbox");
 const studentName = document.querySelector(".imp-info");
 const firstImage = document.querySelector(".first-image");
-const secondImage = document.querySelector(".second-image");
-const thirdImage = document.querySelector(".third-image");
 const attendanceForm = document.querySelector(".push-attendance-form");
 const myButton = document.querySelector(".btn");
-const myArr = [firstImage.innerHTML, secondImage.innerHTML, thirdImage.innerHTML];
 const myLabel = studentName.innerHTML;
 const startTime = new Date();
 
@@ -112,7 +109,7 @@ async function recognizeFaces() {
         var dist = result._distance;
         dist = dist.toFixed(2);
         const box = resizedDetections[i].detection.box;
-        const drawBox = new faceapi.draw.DrawBox(box, {label: "Scanning Face " + dist})
+        const drawBox = new faceapi.draw.DrawBox(box, {label: "Scanning Face"});
         drawBox.draw(canvas);
       })
     }, 100);
@@ -124,11 +121,9 @@ function loadLabeledImages() {
   return Promise.all(
     labels.map(async (label) => {
       const descriptions = [];
-      for (let i = 0; i < 3; i++) {
-        const img = await faceapi.fetchImage(myArr[i]);
+        const img = await faceapi.fetchImage(firstImage.innerHTML);
         const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
         descriptions.push(detections.descriptor);
-      }
       return new faceapi.LabeledFaceDescriptors(label, descriptions);
     })
   )
