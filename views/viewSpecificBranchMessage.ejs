@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Message</title>
     <link rel="stylesheet" href="css/viewSpecificBranchMessage.css">
+    <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
   </head>
   <body>
     <div class="navbar">
@@ -13,13 +14,13 @@
 
     <div class="container">
       <div class="nameOfStudent">
-        <%=msg.studentName%>
+        <h3>Name: <%=msg.studentName%></h3>
       </div>
       <div class="enrollnum">
-        <%=msg.enrollmentno%>
+        Enrollment No.: <%=msg.enrollmentno%>
       </div>
       <div class="studentBranch">
-        <%=msg.branch%>
+        Branch: <%=msg.branch%>
       </div>
       <div class="msgDate">
         <%=msg.todaysDate%>
@@ -27,11 +28,12 @@
       <div class="msgTime">
         <%=msg.currTime%>
       </div>
+      <h1 class="heading">Message:</h1>
       <div class="main-msg">
         <%=msg.message%>
       </div>
-      <form action="/showBranchMessages" method="POST">
-        <button type="submit" name="button">BACK</button>
+      <form name="form" action="/showBranchMessages" method="POST">
+        <box-icon class="back-btn" name="arrow-back" onclick="document.forms.form.submit()"></box-icon>
         <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
         <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
         <input type="hidden" name="showOnlyUnread" value="<%=showOnlyUnread%>">

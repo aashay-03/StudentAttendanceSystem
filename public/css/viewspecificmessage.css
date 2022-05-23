@@ -66,26 +66,60 @@ body {
 }
 
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - 75px);
   position: relative;
   line-height: 2;
 }
 
-button {
-  padding: 10px 20px;
-  border: 1px solid black;
-  outline: none;
-  margin: 15px 1px 13.5px 1px;
-  font-size: 1rem;
-  border-radius: 5px;
-  background-color: #efefef;
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
   cursor: pointer;
+  transform: scale(1.5);
 }
 
-button:hover {
-  background-color: #e0ebeb;
+.nameOfStudent {
+  position: absolute;
+  top: 60px;
+  left: 60px;
+}
+
+.enrollnum {
+  position: absolute;
+  top: 100px;
+  left: 60px;
+}
+
+.studentBranch {
+  position: absolute;
+  top: 140px;
+  left: 60px;
+}
+
+.msgDate {
+  position: absolute;
+  top: 60px;
+  right: 120px;
+}
+
+.msgTime {
+  position: absolute;
+  top: 100px;
+  right: 137px;
+}
+
+.heading {
+  position: absolute;
+  top: 195px;
+  left: 60px;
+}
+
+.main-msg {
+  position: absolute;
+  top: 240px;
+  left: 60px;
+  white-space: pre-line;
+  padding-right: 60px;
+  text-align: left;
+  width: 90vw;
 }
