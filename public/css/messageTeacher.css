@@ -77,6 +77,14 @@ body {
   border-color: transparent transparent transparent black;
 }
 
+.back-btn {
+  position: absolute;
+  top: 100px;
+  left: 30px;
+  cursor: pointer;
+  transform: scale(1.5);
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -137,4 +145,24 @@ textarea {
 
 .message-teacher-form button:hover {
   background-color: #e0ebeb;
+}
+
+/* ############### Media Queries ############### */
+
+@media screen and (max-width: 1050px) {
+  .back-btn {
+    left: 20px;
+  }
+}
+
+@media screen and (max-height: 800px) {
+  textarea {
+    height: 40vh;
+  }
+}
+
+@media screen and (max-height: 750px) {
+  textarea {
+    height: 35vh;
+  }
 }

@@ -99,13 +99,13 @@ body {
 .msgDate {
   position: absolute;
   top: 60px;
-  right: 120px;
+  right: 90px;
 }
 
 .msgTime {
   position: absolute;
   top: 100px;
-  right: 137px;
+  right: 107px;
 }
 
 .heading {

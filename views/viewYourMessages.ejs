@@ -1,49 +1,95 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>View Message</title>
-    <link rel="stylesheet" href="css/viewYourMessages.css">
-  </head>
-  <body>
-    <div class="navbar">
-      <div class="left-side-box">
-        <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
-        <h1 class="nameOfStudent">Welcome <%= studentName %>!</h1>
-      </div>
-      <a class="tooltip" href="/studentLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
-    </div>
 
-    <div class="container">
-      <h1 class="heading">MESSAGES</h1>
-      <form class="myForm" action="/" method="POST">
-        <input class="hidden-input" type="hidden" name="facultyCode" value="<%=facultyCode%>">
-        <div class="custom-select">
-          <select>
-            <option value="0"><%=facultyCode%></option>
-            <option value="1">All Messages</option>
-            <option value="2"></option>
-            <option value="3"></option>
-            <option value="4"></option>
-            <option value="5"></option>
-            <option value="6"></option>
-            <option value="7"></option>
-            <option value="8"></option>
-            <option value="9"></option>
-            <option value="10"></option>
-            <option value="11"></option>
-            <option value="12"></option>
-            <option value="13"></option>
-          </select>
-        </div>
-        <div class="unread-msgs">
-          <input class="show-only-unread" type="checkbox" name="showOnlyUnread" <%=checked%> onchange="this.form.submit()">
-          <label for="show-only-unread">Show unread messages</label>
-        </div>
-        <input type="hidden" name="teacherName" value="<%=teacherName%>">
-        <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
-        <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
-      </form>
+<head>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Messages</title>
+  <link rel="stylesheet" href="css/viewYourMessages.css">
+  <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
+</head>
+
+<body>
+  <div class="navbar">
+    <div class="left-side-box">
+      <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
+      <h1 class="nameOfStudent">Hello <%= studentName %>!</h1>
     </div>
-  </body>
+    <a class="tooltip" href="/studentLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+  </div>
+
+  <div class="container">
+    <h1 class="heading">Messages</h1>
+    <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
+    <form class="view-messages" action="/viewmymessages" method="POST">
+      <input class="hidden-input" type="hidden" name="facultyCode" value="<%=facultyCode%>">
+      <div class="custom-select">
+        <select>
+          <option value="0"><%=facultyCode%></option>
+          <option value="1">All Messages</option>
+          <option value="2">CDG</option>
+          <option value="3">CPS</option>
+          <option value="4">DKD</option>
+          <option value="5">FAG</option>
+          <option value="6">MAK</option>
+          <option value="7">MNG</option>
+          <option value="8">MSB</option>
+          <option value="9">OAK</option>
+          <option value="10">PMA</option>
+          <option value="11">PSJ</option>
+          <option value="12">SAK</option>
+          <option value="13">TSN</option>
+        </select>
+      </div>
+      <div class="bound-together">
+        <label for="selectDate">Select Date:</label>
+        <input type="date" class="selectDate" name="messageDate" value="<%=dateSelected%>" min="2022-01-01" max="<%=todaysDate%>" onchange="this.form.submit()">
+      </div>
+      <input type="hidden" name="studentName" value="<%=studentName%>">
+      <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
+      <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
+    </form>
+
+    <% if(messages.length === 0){ %>
+        <h1 class="no-msg">No Messages Found.</h1>
+    <% } else { %>
+        <div class="box">
+          <% for(var i=0; i<messages.length; i++){ %>
+            <div id=<%=key%> class="message-card">
+              <div class="codeOfFaculty">
+                Faculty Code: <%=messages[i].facultyCode%>
+              </div>
+              <div class="codeOfSubject">
+                Subject Code: <%=messages[i].subjectCode%>
+              </div>
+              <div class="msgDate">
+                <%=messages[i].todaysDate%>
+              </div>
+              <div class="msgTime">
+                <%=messages[i].currTime%>
+              </div>
+              <div class="msg">
+                <% if(messages[i].message.length > 100){ %>
+                  Message: <%=messages[i].message.substring(0, 100)%>.....
+                <% }else{ %>
+                  Message: <%=messages[i].message%>
+                <% } %>
+              </div>
+              <form class="message-form" action="/viewparticularmessage" method="POST">
+                <input type="hidden" name="studentName" value="<%=studentName%>">
+                <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
+                <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
+                <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+                <input type="hidden" name="messageId" value="<%=messages[i]._id%>">
+                <input type="hidden" name="dateSelected" value="<%=dateSelected%>">
+                <button type="submit" name="button">View Message</button>
+              </form>
+            </div>
+            <% key++; %>
+          <% } %>
+        </div>
+    <% } %>
+  </div>
+  <script src="js/viewYourMessages.js" charset="utf-8"></script>
+</body>
+
 </html>

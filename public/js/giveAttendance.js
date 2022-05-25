@@ -112,3 +112,7 @@ function closeAllSelect(elmnt) {
 }
 
 document.addEventListener("click", closeAllSelect);
+
+function backToHome() {
+  location.href = "http://localhost:3000/studentHome";
+}

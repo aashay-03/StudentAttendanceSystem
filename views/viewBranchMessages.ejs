@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <title>Messages</title>
     <link rel="stylesheet" href="css/viewBranchMessages.css">
     <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
   </head>
   <body>
     <div class="navbar">
-      <h1 class="nameOfTeacher">Welcome <%= teacherName %>!</h1>
+      <h1 class="nameOfTeacher">Hello <%= teacherName %>!</h1>
       <a class="tooltip" href="/teacherLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
     </div>
 
     <div class="container">
-      <h1 class="heading">MESSAGES</h1>
-      <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
+      <h1 class="heading">Messages</h1>
+      <form name="form" action="/viewspecificattendance" method="POST">
+        <box-icon class="back-btn" name="arrow-back" onclick="document.forms.form.submit()"></box-icon>
+        <input type="hidden" name="teacherName" value="<%=teacherName%>">
+        <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+        <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+        <input type="hidden" name="branch" value="<%=branch%>">
+        <input type="hidden" name="attendanceDate" value="<%=attendanceDate%>">
+        <input type="hidden" name="startingRange" value="<%=startTime%>">
+        <input type="hidden" name="endingRange" value="<%=endTime%>">
+      </form>
       <% if(unreadMessages.length === 0 && readMessages.length === 0 && msgCount === 0){ %>
           <h1 class="no-msg">No Messages Found</h1>
       <% }else{ %>
@@ -29,6 +38,8 @@
             <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
             <input type="hidden" name="branch" value="<%=branch%>">
             <input type="hidden" name="attendanceDate" value="<%=attendanceDate%>">
+            <input type="hidden" name="startTime" value="<%=startTime%>">
+            <input type="hidden" name="endTime" value="<%=endTime%>">
           </form>
         <% if(unreadMessages.length === 0 && readMessages.length === 0 && msgCount != 0){ %>
           <h1 class="no-unread-msg">No Unread Messages</h1>
@@ -73,6 +84,8 @@
                       <input type="hidden" name="showOnlyUnread" value="<%=checked%>">
                       <input type="hidden" name="branch" value="<%=branch%>">
                       <input type="hidden" name="attendanceDate" value="<%=attendanceDate%>">
+                      <input type="hidden" name="startTime" value="<%=startTime%>">
+                      <input type="hidden" name="endTime" value="<%=endTime%>">
                       <button type="submit" name="button">View Message</button>
                     </form>
                     <%key++;%>
@@ -117,6 +130,8 @@
                       <input type="hidden" name="showOnlyUnread" value="<%=checked%>">
                       <input type="hidden" name="branch" value="<%=branch%>">
                       <input type="hidden" name="attendanceDate" value="<%=attendanceDate%>">
+                      <input type="hidden" name="startTime" value="<%=startTime%>">
+                      <input type="hidden" name="endTime" value="<%=endTime%>">
                       <button type="submit" name="button">View Message</button>
                     </form>
                     <%key++;%>
@@ -126,6 +141,5 @@
       <% } %>
     </div>
 
-    <script src="js/viewBranchMessages.js" charset="utf-8"></script>
   </body>
 </html>

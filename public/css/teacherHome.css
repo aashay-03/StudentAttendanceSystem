@@ -70,17 +70,23 @@ body {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 75px);
+  height: calc(100vh - 76px);
+}
+
+.home-box {
+  padding: 25px 20px 20px 20px;
+  border: 2px solid black;
+  border-radius: 15px;
 }
 
 button {
-  padding: 10px 20px;
-  border: 1px solid black;
+  margin: 12px;
+  padding: 8px 8px 8px 6.5px;
+  width: 350px;
+  border-radius: 8px;
   outline: none;
-  margin: 0 15px;
+  border: 1px solid black;
   font-size: 1rem;
-  border-radius: 5px;
-  background-color: #efefef;
   cursor: pointer;
 }
 

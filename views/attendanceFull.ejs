@@ -1,34 +1,53 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Message</title>
-    <link rel="stylesheet" href="css/attendanceFull.css">
-  </head>
-  <body>
-    <div class="navbar">
-      <div class="left-side-box">
-        <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
-        <h1 class="nameOfStudent">Welcome <%= studentName %>!</h1>
-      </div>
-      <a class="tooltip" href="/studentLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
-    </div>
 
-    <div class="container">
-      <h2 class="msg-textbox">You have exceeded the limit of maximum attempts for the day to mark your attendance for this subject.</h2>
-      <div class="btn-box">
-        <a href="/studentHome">Home</a>
-        <form class="attendance-full-form" action="/attendanceFull" method="POST">
-          <input type="hidden" name="studentName" value="<%=studentName%>">
-          <input type="hidden" name="username" value="<%=username%>">
-          <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
-          <input type="hidden" name="branch" value="<%=branch%>">
-          <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
-          <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
-          <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
-          <button type="submit" name="button">Message Teacher</button>
-        </form>
-      </div>
+<head>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+  <title>Message</title>
+  <link rel="stylesheet" href="css/attendanceFull.css">
+  <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
+</head>
+
+<body>
+  <div class="navbar">
+    <div class="left-side-box">
+      <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
+      <h1 class="nameOfStudent">Hello <%= studentName %>!</h1>
     </div>
-  </body>
+    <a class="tooltip" href="/studentLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+  </div>
+
+  <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
+
+  <div class="container">
+    <h2 class="msg-textbox">You have exceeded the limit of maximum attempts for the day to mark your attendance for this subject.</h2>
+
+    <p class="imp-info"><%=buttonValue%></p>
+
+    <form class="attendance-full-form" action="/attendanceFull" method="POST">
+      <input type="hidden" name="studentName" value="<%=studentName%>">
+      <input type="hidden" name="username" value="<%=username%>">
+      <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
+      <input type="hidden" name="branch" value="<%=branch%>">
+      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+      <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
+      <button type="submit" name="button">Message Teacher</button>
+    </form>
+
+    <form class="view-message-form" action="/viewmessagesenttoteacher" method="POST">
+      <input type="hidden" name="studentName" value="<%=studentName%>">
+      <input type="hidden" name="username" value="<%=username%>">
+      <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
+      <input type="hidden" name="branch" value="<%=branch%>">
+      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+      <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
+      <button type="submit" name="button">View Message</button>
+    </form>
+  </div>
+
+  <script src="js/attendanceFull.js" charset="utf-8"></script>
+</body>
+
 </html>

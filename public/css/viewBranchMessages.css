@@ -176,7 +176,6 @@ input {
   background-color: #5cd65c;
   border-color: #006622;
 }
-
 .nameOfStudent {
   position: absolute;
   top: 45px;
@@ -186,7 +185,7 @@ input {
 .studentImage {
   position: absolute;
   top: 25px;
-  right: 116px;
+  right: 112px;
 }
 
 .emailId {
@@ -204,13 +203,13 @@ input {
 .enrollnum {
   position: absolute;
   top: 110px;
-  left: 350px;
+  right: 40px;
 }
 
 .studentBranch {
   position: absolute;
   top: 140px;
-  left: 406px;
+  right: 115px;
 }
 
 .msgDate {
@@ -230,6 +229,7 @@ input {
   top: 180px;
   left: 40px;
   text-align: left;
+  padding-right: 40px;
 }
 
 .imp-info {
@@ -259,4 +259,24 @@ button {
 
 button:hover {
   background-color: #e0ebeb;
+}
+
+/* ############### Media Queries ############### */
+
+@media screen and (max-width: 1150px) {
+  .message-card {
+    width: 50vw;
+  }
+}
+
+@media screen and (max-width: 1025px) {
+  .message-card {
+    width: 60vw;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .message-card {
+    width: 70vw;
+  }
 }

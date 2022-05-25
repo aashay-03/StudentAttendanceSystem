@@ -6,22 +6,21 @@ let message = document.querySelector(".msg-textbox");
 const studentName = document.querySelector(".imp-info");
 const firstImage = document.querySelector(".first-image");
 const attendanceForm = document.querySelector(".push-attendance-form");
-const myButton = document.querySelector(".btn");
+const giveAttendanceForm = document.querySelector(".give-attendance-form");
+const attemptsLeft = document.querySelector(".tries-rem");
+const triesRem = document.querySelector(".attempts-left");
 const myLabel = studentName.innerHTML;
 const startTime = new Date();
 
-var match = 0;
-var notmatch = 0;
-var total = 0;
+var match = 0, notmatch = 0, total = 0;
 
 var myFunction = setInterval(updateTime, 1000);
 
 function updateTime(){
-  var currTime = new Date();
-  var diff = currTime - startTime;
-  console.log(diff);
-  if(diff > 45000){
-    if(match < 110){
+  let currTime = new Date();
+  let diff = currTime - startTime;
+  if(diff >= 27500){
+    if(match < 33){
       match = 0;
       notmatch = 0;
     }
@@ -29,7 +28,6 @@ function updateTime(){
     clearInterval(myFunction);
   }
 }
-
 
 Promise.all([
   faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
@@ -56,9 +54,6 @@ function start() {
       .then(function(mediaStream) {
         video.srcObject = mediaStream;
         var currTime = new Date();
-        para.innerHTML = "Detecting Face...";
-        para.style.display = "block";
-        para.style.color = "black";
       })
       .catch(function(err) {
         para.style.display = "block";
@@ -71,11 +66,9 @@ function start() {
 
 async function recognizeFaces() {
   const labeledDescriptors = await loadLabeledImages();
-  console.log(labeledDescriptors);
   const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.7);
 
   video.addEventListener("play", () => {
-    console.log("Video is playing");
     const canvas = faceapi.createCanvasFromMedia(video);
     box.append(canvas);
 
@@ -84,6 +77,21 @@ async function recognizeFaces() {
 
     setInterval(async () => {
       const detections = await faceapi.detectAllFaces(video).withFaceLandmarks().withFaceDescriptors();
+      let currTime = new Date();
+      let diff = currTime - startTime;
+      if(detections.length === 1){
+        para.style.display = "block";
+        para.innerHTML = "Scanning Face...";
+        para.style.color = "black";
+      }else if(detections.length === 0){
+        if(diff >= 27500){
+          para.style.display = "none";
+        }else{
+          para.style.display = "block";
+          para.innerHTML = "Unable to detect a face. Please align your face with the webcam or check the camera quality";
+          para.style.color = "red";
+        }
+      }
       const resizedDetections = faceapi.resizeResults(detections, displaySize);
       canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
 
@@ -91,10 +99,7 @@ async function recognizeFaces() {
         return faceMatcher.findBestMatch(d.descriptor);
       });
       total = match + notmatch;
-      console.log(total);
-      console.log(match);
-      console.log(notmatch);
-      if (total >= 120) {
+      if (total >= 40) {
         stopFunction();
         clearInterval(myFunction);
         return;
@@ -137,19 +142,35 @@ function stopFunction() {
   para.style.display = "none";
   message.style.display = "block";
   if(match === 0 && notmatch === 0){
-    message.innerHTML = "Taking too long to detect a face. Please check the camera quality and try again. Ensure that your face is in line with the webcam.";
-    message.style.color = "red";
-    tryAgainButton.style.display = "block";
-  }else if(match < 110){
+    try {
+      document.querySelector("canvas").style.display = "none";
+    } catch (e) {
+      console.log(e);
+    }
+    if(triesRem.innerHTML == 0){
+      giveAttendanceForm.submit();
+    }else{
+      message.innerHTML = "Taking too long to detect a face. Please check the camera quality and try again. Ensure that your face is in line with the webcam.";
+      message.style.color = "red";
+      tryAgainButton.style.display = "block";
+      attemptsLeft.style.display = "block";
+      attemptsLeft.style.color = "red";
+    }
+  }else if(match < 33){
     document.querySelector("canvas").style.display = "none";
-    message.innerHTML = "Unable to detect a face. Please try again.";
-    message.style.color = "red";
-    tryAgainButton.style.display = "block";
+    if(triesRem.innerHTML == 0){
+      giveAttendanceForm.submit();
+    }else{
+      message.innerHTML = "Unable to detect a face. Please try again.";
+      message.style.color = "red";
+      tryAgainButton.style.display = "block";
+      attemptsLeft.style.display = "block";
+      attemptsLeft.style.color = "red";
+    }
   }else{
     document.querySelector("canvas").style.display = "none";
     message.innerHTML = "Attendance was recorded successfully in the system.";
     message.style.color = "green";
-    myButton.style.display = "block";
     attendanceForm.submit();
     return;
   }

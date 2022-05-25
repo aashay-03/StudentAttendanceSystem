@@ -199,26 +199,13 @@ app.post("/", function(req, res) {
   }
 });
 
-// // ######## change the way not get request ##############
-//
-// app.get("/viewyourmessages", function(req, res) {
-//   UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
-//     if(err){
-//       console.log(err);
-//     }else{
-//       res.render("viewYourMessages", {studentName: req.user.studentName, imageUploaded: result.firstImagePath});
-//     }
-//   });
-// });
-
 app.get("/studentHome", ensureAuthStudent, function(req, res) {
   const currUser = req.user._id;
   UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
     if(result === null){
       res.redirect("/uploadimages");
     }else{
-      console.log(result);
-      res.render("studentHome", {studentName: req.user.studentName, username: req.user.username, enrollmentno: req.user.enrollmentno, branch: req.user.branch, username: req.user.username, imageUploaded: result.firstImagePath});
+      res.render("studentHome", {studentName: req.user.studentName, username: req.user.username, enrollmentno: req.user.enrollmentno, branch: req.user.branch, imageUploaded: result.firstImagePath});
     }
   });
 });
@@ -244,7 +231,183 @@ app.get("/uploadimages", ensureAuthStudent, function(req, res) {
   });
 });
 
-app.post("/studentHome", function(req, res) {
+app.post("/homegiveattendance", function(req, res) {
+  console.log(req.body);
+  const d = new Date();
+  const day = d.getDay();
+  if(day === 0){
+    res.render("messages", {msg: "Can't give attendance on Sundays.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+  }else{
+    const maxValue = 61200;
+    const minValue = 32400;
+    let hour = d.getHours();
+    let minute = d.getMinutes();
+    let second = d.getSeconds();
+    let currTime = (hour * 3600) + (minute * 60) + second;
+    if(currTime < minValue){
+      res.render("messages", {msg: "Can't give attendance before 9AM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+    }else if(currTime > maxValue){
+      res.render("messages", {msg: "Can't give attendance after 5PM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+    }else{
+      res.redirect("/giveattendance");
+    }
+  }
+});
+
+app.post("/homeviewyourmessages", function(req, res) {
+  res.redirect("/viewyourmessages");
+});
+
+app.get("/viewyourmessages", ensureAuthStudent, function(req, res) {
+  const currUser = req.user._id;
+  UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
+    if(result === null){
+      res.redirect("/uploadimages");
+    }else{
+      const d = new Date();
+      let todaysDate = "";
+      let date = d.getDate();
+      if(date >= 1 && date <= 9){
+        date = "0" + date;
+      }
+      let month = d.getMonth() + 1;
+      if(month >= 1 && month <= 9){
+        month = "0" + month;
+      }
+      let year = d.getFullYear();
+      todaysDate += year + "-" + month + "-" + date;
+      Teachermessage.find({enrollmentno: req.user.enrollmentno}, function(err, messages) {
+        if(err){
+          console.log(err);
+        }else{
+          res.render("viewYourMessages", {studentName: req.user.studentName, enrollmentno: req.user.enrollmentno, imageUploaded: result.firstImagePath, facultyCode: "Select Faculty Code", todaysDate: todaysDate, dateSelected: "", key: 0, messages: messages});
+        }
+      });
+    }
+  });
+});
+
+app.post("/viewmymessages", function(req, res) {
+  console.log(req.body);
+  if(req.body.facultyCode === "All Messages"){
+    req.body.facultyCode = "Select Faculty Code";
+  }
+  if(req.body.facultyCode === "Select Faculty Code"){
+    if(req.body.messageDate === ""){
+      res.redirect("/viewyourmessages");
+    }else{
+      let currentDate = "";
+      const myArr = req.body.messageDate.split("-");
+      let date = parseInt(myArr[2]);
+      if(date >= 1 && date <= 9){
+        date = "0" + date;
+      }
+      let month = parseInt(myArr[1]);
+      if(month >= 1 && month <= 9){
+        month = "0" + month;
+      }
+      let year = parseInt(myArr[0]);
+      currentDate += date + "/" + month + "/" + year;
+      const d = new Date();
+      let todaysDate = "";
+      let tdate = d.getDate();
+      if(tdate >= 1 && tdate <= 9){
+        tdate = "0" + tdate;
+      }
+      let tmonth = d.getMonth() + 1;
+      if(tmonth >= 1 && tmonth <= 9){
+        tmonth = "0" + tmonth;
+      }
+      let tyear = d.getFullYear();
+      todaysDate += tyear + "-" + tmonth + "-" + tdate;
+      Teachermessage.find({enrollmentno: req.body.enrollmentno, todaysDate: currentDate}, function(err, result) {
+        if(err){
+          console.log(err);
+        }else{
+          res.render("viewYourMessages", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, imageUploaded: req.body.imageUploaded, facultyCode: "Select Faculty Code", todaysDate: todaysDate, dateSelected: req.body.messageDate, key: 0, messages: result});
+        }
+      });
+    }
+  }else{
+    if(req.body.messageDate === ""){
+      Teachermessage.find({enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode}, function(err, result) {
+        if(err){
+          console.log(err);
+        }else{
+          const d = new Date();
+          let todaysDate = "";
+          let date = d.getDate();
+          if(date >= 1 && date <= 9){
+            date = "0" + date;
+          }
+          let month = d.getMonth() + 1;
+          if(month >= 1 && month <= 9){
+            month = "0" + month;
+          }
+          let year = d.getFullYear();
+          todaysDate += year + "-" + month + "-" + date;
+          res.render("viewYourMessages", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, imageUploaded: req.body.imageUploaded, facultyCode: req.body.facultyCode, todaysDate: todaysDate, dateSelected: "", key: 0, messages: result});
+        }
+      });
+    }else{
+      let currentDate = "";
+      const myArr = req.body.messageDate.split("-");
+      let date = parseInt(myArr[2]);
+      if(date >= 1 && date <= 9){
+        date = "0" + date;
+      }
+      let month = parseInt(myArr[1]);
+      if(month >= 1 && month <= 9){
+        month = "0" + month;
+      }
+      let year = parseInt(myArr[0]);
+      currentDate += date + "/" + month + "/" + year;
+      const d = new Date();
+      let todaysDate = "";
+      let tdate = d.getDate();
+      if(tdate >= 1 && tdate <= 9){
+        tdate = "0" + tdate;
+      }
+      let tmonth = d.getMonth() + 1;
+      if(tmonth >= 1 && tmonth <= 9){
+        tmonth = "0" + tmonth;
+      }
+      let tyear = d.getFullYear();
+      todaysDate += tyear + "-" + tmonth + "-" + tdate;
+      Teachermessage.find({enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, todaysDate: currentDate}, function(err, result) {
+        if(err){
+          console.log(err);
+        }else{
+          res.render("viewYourMessages", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, imageUploaded: req.body.imageUploaded, facultyCode: req.body.facultyCode, todaysDate: todaysDate, dateSelected: req.body.messageDate, key: 0, messages: result});
+        }
+      });
+    }
+  }
+});
+
+app.post("/viewparticularmessage", function(req, res) {
+  console.log(req.body);
+  Teachermessage.findOne({_id: req.body.messageId}, function(err, result) {
+    if(err){
+      console.log(err);
+    }else{
+      res.render("viewParticularMessage", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, imageUploaded: req.body.imageUploaded, facultyCode: req.body.facultyCode, msg: result, dateSelected: req.body.dateSelected});
+    }
+  });
+});
+
+app.get("/giveattendance", ensureAuthStudent, function(req, res) {
+  const currUser = req.user._id;
+  UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
+    if(result === null){
+      res.redirect("/uploadimages");
+    }else{
+      res.render("giveAttendance", {studentName: req.user.studentName, username: req.user.username, enrollmentno: req.user.enrollmentno, branch: req.user.branch, imageUploaded: result.firstImagePath});
+    }
+  });
+});
+
+app.post("/giveattendance", function(req, res) {
   console.log(req.body);
   const currUser = req.body.username;
   let errors = [];
@@ -252,7 +415,7 @@ app.post("/studentHome", function(req, res) {
     errors.push({msg: "Please Select Subject Code"});
   }
   if(errors.length > 0){
-    res.render("studentHome", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: currUser, imageUploaded: req.body.imageUploaded});
+    res.render("giveAttendance", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: currUser, imageUploaded: req.body.imageUploaded});
   }else{
     const d = new Date();
     let todaysDate = "";
@@ -303,13 +466,24 @@ app.post("/studentHome", function(req, res) {
                   if(err){
                     console.log(err);
                   }else{
-                    res.render("attendance", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath});
+                    res.render("attendance", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, triesRem: 4});
                   }
                 });
               } else {
                 const tryVar = result.tries + 1;
+                console.log(tryVar);
                 if (tryVar === 6) {
-                  res.render("attendanceFull", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
+                  Teachermessage.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode}, function(err, result) {
+                    if(err){
+                      console.log(err);
+                    }else{
+                      if(result === null){
+                        res.render("attendanceFull", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, buttonValue: "Message Teacher"});
+                      }else{
+                        res.render("attendanceFull", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, buttonValue: "View Message"});
+                      }
+                    }
+                  });
                 } else {
                   Validateattendance.findOneAndUpdate({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, {tries: tryVar, currTime: currTime}, function(err, result) {
                     if (err) {
@@ -320,7 +494,7 @@ app.post("/studentHome", function(req, res) {
                     if(err){
                       console.log(err);
                     }else{
-                      res.render("attendance", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath});
+                      res.render("attendance", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, triesRem: (5 - tryVar)});
                     }
                   });
                 }
@@ -328,7 +502,7 @@ app.post("/studentHome", function(req, res) {
             }
           })
         } else {
-          res.render("messages", {msg: "Attendance is already marked for this subject.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
+          res.render("messages", {msg: "Attendance is already marked for this subject.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
         }
       }
     });
@@ -355,6 +529,19 @@ app.post("/viewspecificattendance", async function(req, res) {
   console.log(req.body);
   const startTime = req.body.startingRange;
   const endTime = req.body.endingRange;
+  if(req.body.attendanceDate.includes("/")){
+    const myArray = req.body.attendanceDate.split("/");
+    let aDay = parseInt(myArray[0]);
+    if(aDay >= 1 && aDay <= 9){
+      aDay = "0" + aDay;
+    }
+    let aMonth = parseInt(myArray[1]);
+    if(aMonth >= 1 && aMonth <= 9){
+      aMonth = "0" + aMonth;
+    }
+    let aYear = parseInt(myArray[2]);
+    req.body.attendanceDate = "" + aYear + "-" + aMonth + "-" + aDay;
+  }
   const startingArr = startTime.split(":");
   const endingArr = endTime.split(":");
   const checkStartingTime = (parseInt(startingArr[0]) * 3600) + (parseInt(startingArr[1]) * 60);
@@ -470,7 +657,7 @@ app.post("/viewmessages", ensureAuthTeacher, function(req, res) {
           console.log(readMessages);
           console.log(unreadMessages);
           console.log(req.body.teacherName);
-          res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: "Select Branch"});
+          res.render("viewMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: "Select Branch"});
         }
       });
     }
@@ -488,7 +675,7 @@ app.post("/showBranchMessages", function(req, res) {
           if(err){
             console.log(err);
           }else{
-            res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: [], key: 0, checked: "checked", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: req.body.attendanceDate});
+            res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: [], key: 0, checked: "checked", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: req.body.attendanceDate, startTime: req.body.startTime, endTime: req.body.endTime});
           }
         });
       }
@@ -503,7 +690,7 @@ app.post("/showBranchMessages", function(req, res) {
             console.log(err);
           }else{
             console.log(req.body.teacherName);
-            res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: req.body.attendanceDate});
+            res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: req.body.attendanceDate, startTime: req.body.startTime, endTime: req.body.endTime});
           }
         });
       }
@@ -530,7 +717,7 @@ app.post("/showMessages", function(req, res) {
             if(err){
               console.log(err);
             }else{
-              res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: [], key: 0, checked: "checked", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: branchSelected});
+              res.render("viewMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: [], key: 0, checked: "checked", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: branchSelected});
             }
           });
         }
@@ -545,7 +732,7 @@ app.post("/showMessages", function(req, res) {
               console.log(err);
             }else{
               console.log(req.body.teacherName);
-              res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: branchSelected});
+              res.render("viewMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: branchSelected});
             }
           });
         }
@@ -562,7 +749,7 @@ app.post("/showMessages", function(req, res) {
             if(err){
               console.log(err);
             }else{
-              res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: [], key: 0, checked: "checked", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, branchValue: branchSelected});
+              res.render("viewMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: [], key: 0, checked: "checked", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, branchValue: branchSelected});
             }
           });
         }
@@ -577,7 +764,7 @@ app.post("/showMessages", function(req, res) {
               console.log(err);
             }else{
               console.log(req.body.teacherName);
-              res.render("viewmessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, branchValue: branchSelected});
+              res.render("viewMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, branchValue: branchSelected});
             }
           });
         }
@@ -609,7 +796,7 @@ app.post("/viewbranchmessages", function(req, res) {
           console.log(err);
         }else{
           console.log(req.body.teacherName);
-          res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: todaysDate});
+          res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: todaysDate, startTime: req.body.startTime, endTime: req.body.endTime});
         }
       });
     }
@@ -625,7 +812,7 @@ app.post("/viewspecificbranchmessage", function(req, res) {
         if(err){
           console.log(err);
         }else{
-          res.render("viewSpecificBranchMessage", {teacherName: req.body.teacherName, subjectCode:req.body.subjectCode, facultyCode: req.body.facultyCode, msg: result, showOnlyUnread: req.body.showOnlyUnread, branch: req.body.branch, attendanceDate: req.body.attendanceDate});
+          res.render("viewSpecificBranchMessage", {teacherName: req.body.teacherName, subjectCode:req.body.subjectCode, facultyCode: req.body.facultyCode, msg: result, showOnlyUnread: req.body.showOnlyUnread, branch: req.body.branch, attendanceDate: req.body.attendanceDate, startTime: req.body.startTime, endTime: req.body.endTime});
         }
       });
     }
@@ -645,15 +832,11 @@ app.post("/viewspecificmessage", function(req, res) {
         if(err){
           console.log(err);
         }else{
-          res.render("viewspecificmessage", {teacherName: req.body.teacherName, subjectCode:req.body.subjectCode, facultyCode: req.body.facultyCode, msg: result, showOnlyUnread: req.body.showOnlyUnread, branch: req.body.branch});
+          res.render("viewSpecificMessage", {teacherName: req.body.teacherName, subjectCode:req.body.subjectCode, facultyCode: req.body.facultyCode, msg: result, showOnlyUnread: req.body.showOnlyUnread, branch: req.body.branch});
         }
       });
     }
   });
-});
-
-app.post("/tryagain", function(req, res) {
-  res.redirect("/studentHome");
 });
 
 app.post("/takemehome", function(req, res) {
@@ -703,9 +886,9 @@ app.post("/pushattendance", function(req, res) {
           currTime: currTime
         });
         attendee.save();
-        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
       }else{
-        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
       }
     }
   });
@@ -786,7 +969,7 @@ app.post("/attendanceFull", function(req, res) {
       console.log(err);
     }else{
       if(result.length === 3){
-        res.render("messages", {msg: "Can't message teacher more than three times in a month.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
+        res.render("messages", {msg: "Can't message teacher more than three times in a month.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
       }else{
         res.render("messageTeacher", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
       }
@@ -837,7 +1020,7 @@ app.post("/messageTeacher", function(req, res) {
     currTime: currTime
   });
   messageToTeacher.save();
-  res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, buttonText: "Home"});
+  res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
 });
 
 app.post("/studentRegister", function(req, res) {
@@ -886,9 +1069,9 @@ app.post("/studentRegister", function(req, res) {
                 }else{
                   if (result != null) {
                     errors.push({msg: "Invalid Enrollment Number"});
-                  }
-                  if (errors.length > 0) {
-                    res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+                    if (errors.length > 0) {
+                      res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+                    }
                   }else{
                     Student.register({username: req.body.username, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, role: "Student"}, req.body.password, function(err, user) {
                       if (err) {
@@ -923,31 +1106,51 @@ app.post("/teacherRegister", function(req, res) {
   if(errors.length > 0){
     res.render("teacherRegister", {errors, teacherName, email, facultyCode});
   }else{
-    if (req.body.password.length < 6) {
-      errors.push({msg: "Password should be atleast 6 characters"});
-    }
-    if (req.body.password.length > 15) {
-      errors.push({msg: "Password should not exceed 15 characters"});
+    if(/^[a-zA-Z]+$/.test(req.body.teacherName) === false){
+      errors.push({msg: "Please enter correct name"});
     }
     if(errors.length > 0){
       res.render("teacherRegister", {errors, teacherName, email, facultyCode});
     }else{
-      if(req.body.collegeCode != college_code){
-        errors.push({msg: "Incorrect College Code"});
+      if (req.body.password.length < 6) {
+        errors.push({msg: "Password should be atleast 6 characters"});
+      }
+      if (req.body.password.length > 15) {
+        errors.push({msg: "Password should not exceed 15 characters"});
       }
       if(errors.length > 0){
         res.render("teacherRegister", {errors, teacherName, email, facultyCode});
       }else{
-        Teacher.register({username: req.body.username, teacherName: req.body.teacherName, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode, role: "Teacher"}, req.body.password, function(err, user) {
-          if (err) {
-            errors.push({msg: "Email is already registered"})
-            res.render("teacherRegister", {errors, teacherName, email, facultyCode});
-          } else {
-            passport.authenticate("teacher-local")(req, res, function() {
-              res.redirect("/teacherHome");
-            });
-          }
-        });
+        if(req.body.collegeCode != college_code){
+          errors.push({msg: "Incorrect College Code"});
+        }
+        if(errors.length > 0){
+          res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+        }else{
+          Teacher.findOne({facultyCode: req.body.facultyCode}, function(err, result) {
+            if(err){
+              console.log(err);
+            }else{
+              if(result != null){
+                errors.push({msg: "Invalid Faculty Code"});
+                if(errors.length > 0){
+                  res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+                }
+              }else{
+                Teacher.register({username: req.body.username, teacherName: req.body.teacherName, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode, role: "Teacher"}, req.body.password, function(err, user) {
+                  if (err) {
+                    errors.push({msg: "Email is already registered"})
+                    res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+                  } else {
+                    passport.authenticate("teacher-local")(req, res, function() {
+                      res.redirect("/teacherHome");
+                    });
+                  }
+                });
+              }
+            }
+          });
+        }
       }
     }
   }

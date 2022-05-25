@@ -181,6 +181,7 @@ input {
 
 .bound-together span {
   margin-right: 5px;
+  font-size: 1.3rem;
 }
 
 .selectDate {
@@ -207,6 +208,7 @@ input {
   align-items: center;
   justify-content: space-between;
   width: 95vw;
+  border: 1px solid transparent;
 }
 
 button {
@@ -280,4 +282,155 @@ button:hover {
 
 .red {
   background-color: #ff3333;
+}
+
+/* ############### Media Queries ############### */
+
+@media screen and (max-width: 1450px) {
+  .view-attendance-form {
+    width: 98vw;
+  }
+}
+
+@media screen and (max-width: 1396px) {
+  .view-attendance-form {
+    width: 100vw;
+  }
+}
+
+@media screen and (max-width: 1368px) {
+  .view-attendance-form {
+    width: 99vw;
+  }
+
+  .custom-select {
+    width: 240px;
+  }
+
+  .selectDate {
+    width: 190px;
+  }
+
+  .time-range {
+    width: 140px;
+  }
+}
+
+@media screen and (max-width: 1321px) {
+  .view-attendance-form {
+    width: 100vw;
+  }
+
+  .custom-select {
+    width: 220px;
+  }
+
+  .selectDate {
+    width: 170px;
+  }
+
+  .time-range {
+    width: 120px;
+  }
+
+  .get-attendance-btn {
+    padding: 10px 10px;
+  }
+}
+
+@media screen and (max-width: 1208px) {
+  .custom-select {
+    width: 200px;
+  }
+
+  .selectDate {
+    width: 150px;
+  }
+
+  .time-range {
+    width: 100px;
+  }
+
+  .get-attendance-btn {
+    padding: 10px 5px;
+  }
+}
+
+@media screen and (max-width: 1120px) {
+  .bound-together label {
+    font-size: 1.1rem;
+  }
+
+  .bound-together span {
+    margin-right: 2.5px;
+    font-size: 1.1rem;
+  }
+}
+
+@media screen and (max-width: 1038px) {
+  .bound-together label {
+    font-size: 1rem;
+  }
+
+  .bound-together span {
+    margin-right: 2px;
+    font-size: 1rem;
+  }
+
+  input {
+    margin: 6px;
+    padding: 8px 6px 8px 4.5px;
+  }
+
+  .starting-time  {
+    margin-right: 8px;
+  }
+}
+
+@media screen and (max-width: 1007px) {
+  .custom-select {
+    width: 180px;
+  }
+
+  .selectDate {
+    width: 130px;
+  }
+
+  .time-range {
+    width: 80px;
+  }
+}
+
+@media screen and (max-width: 928px) {
+  .custom-select {
+    width: 160px;
+  }
+}
+
+@media screen and (max-width: 880px) {
+  .custom-select {
+    width: 145px;
+    margin: 4px;
+  }
+
+  .time-range {
+    width: 75px;
+  }
+
+  .starting-time  {
+    margin-right: 4px;
+  }
+
+  input {
+    margin: 4px;
+  }
+
+  .get-attendance-btn {
+    padding: 10px 4px;
+    width: 100px;
+  }
+
+  .bound-together span {
+    margin-right: 1px;
+  }
 }

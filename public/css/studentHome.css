@@ -82,27 +82,16 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 75px);
+  height: calc(100vh - 76px);
 }
 
-.attendance-box {
+.home-box {
   padding: 25px 20px 20px 20px;
   border: 2px solid black;
   border-radius: 15px;
 }
 
-.attendance-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.adjust-height {
-  margin-bottom: 10%;
-}
-
-input {
+button {
   margin: 12px;
   padding: 8px 8px 8px 6.5px;
   width: 350px;
@@ -110,83 +99,9 @@ input {
   outline: none;
   border: 1px solid black;
   font-size: 1rem;
-  text-align: center;
-}
-
-.custom-select {
-  position: relative;
-  width: 350px;
-  margin: 12px;
-  width: 350px;
-  border-radius: 8px;
-  outline: none;
-  border: 1px solid black;
-  font-size: 1rem;
-}
-
-.custom-select select {
-  display: none;
-}
-
-.select-selected:after {
-  position: absolute;
-  content: "";
-  top: 14px;
-  right: 10px;
-  width: 0;
-  height: 0;
-  border: 6px solid transparent;
-  border-color: #000 transparent transparent transparent;
-}
-
-.select-selected.select-arrow-active:after {
-  border-color: transparent transparent #000 transparent;
-  top: 7px;
-}
-
-.select-items div {
-  color: #000;
-  padding: 8px 16px 8px 6.5px;
-  border: 1px solid transparent;
-  border-color: rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
-.select-selected {
-  color: #000;
-  padding: 8px 16px 8px 5px;
-  border: 1px solid transparent;
-  cursor: pointer;
-}
-
-.select-items {
-  position: absolute;
-  background-color: #fff;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 99;
-}
-
-.select-hide {
-  display: none;
-}
-
-.select-items div:hover, .same-as-selected {
-  background-color: #1e90ff;
-}
-
-.attendance-form button {
-  padding: 10px 20px;
-  border: 1px solid black;
-  outline: none;
-  margin: 13.5px 1px 13.5px 1px;
-  font-size: 1rem;
-  border-radius: 5px;
-  background-color: #efefef;
-  cursor: pointer;
-}
-
-.attendance-form button:hover {
+button:hover {
   background-color: #e0ebeb;
 }

@@ -22,6 +22,18 @@ body {
   color: #fff;
 }
 
+.navbar .profile-photo {
+  width: 65px;
+  height: 65px;
+  margin-top: 5px;
+  border-radius: 45px;
+}
+
+.left-side-box {
+  display: flex;
+  margin-left: 25px;
+}
+
 .navbar .logout-btn {
   width: 25px;
   height: 25px;
@@ -65,37 +77,37 @@ body {
   border-color: transparent transparent transparent black;
 }
 
+.back-btn {
+  position: absolute;
+  top: 110px;
+  left: 40px;
+  cursor: pointer;
+  transform: scale(1.5);
+}
+
 .container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: relative;
+  height: calc(100vh - 76px);
 }
 
-.heading {
-  font-size: 3.5rem;
-  margin-top: 30px;
+.attendance-box {
+  padding: 25px 20px 20px 20px;
+  border: 2px solid black;
+  border-radius: 15px;
 }
 
-.back-btn {
-  position: absolute;
-  top: 50px;
-  left: 50px;
-  cursor: pointer;
-  transform: scale(1.5);
+.attendance-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.no-msg {
-  margin-top: 23vh;
-  color: blue;
-  margin-bottom: 10px;
-}
-
-.no-unread-msg {
-  color: blue;
-  margin-top: 18vh;
-  margin-bottom: 10px;
+.adjust-height {
+  margin-bottom: 10%;
 }
 
 input {
@@ -106,6 +118,7 @@ input {
   outline: none;
   border: 1px solid black;
   font-size: 1rem;
+  text-align: center;
 }
 
 .custom-select {
@@ -170,163 +183,31 @@ input {
   background-color: #1e90ff;
 }
 
-.unread-msgs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.myForm {
-  margin-top: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 80vw;
-}
-
-.show-only-unread {
-  height: 23.5px;
-  width: 23.5px;
-  margin-right: 10px;
-}
-
-.box {
-  width: 90vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 40px;
-}
-
-.adjust-height {
-  margin-top: 230px;
-}
-
-.message-card {
-  padding: 10px;
-  width: 40vw;
-  margin: 26px 26px;
-  border: 3px solid;
-  line-height: 1.5;
-  border-radius: 16px;
-  position: relative;
-  height: 315px;
-}
-
-.unread {
-  color: white;
-  background-color: #f74f4f;
-  border-color: #990000;
-}
-
-.read {
-  color: white;
-  background-color: #5cd65c;
-  border-color: #006622;
-}
-
-.nameOfStudent {
-  position: absolute;
-  top: 45px;
-  left: 40px;
-}
-
-.studentImage {
-  position: absolute;
-  top: 25px;
-  right: 112px;
-}
-
-.emailId {
-  position: absolute;
-  top: 80px;
-  left: 40px;
-}
-
-.message-card img {
-  width: 65px;
-  height: 65px;
-  border-radius: 45px;
-}
-
-.enrollnum {
-  position: absolute;
-  top: 110px;
-  right: 40px;
-}
-
-.studentBranch {
-  position: absolute;
-  top: 140px;
-  right: 115px;
-}
-
-.msgDate {
-  position: absolute;
-  top: 110px;
-  left: 40px;
-}
-
-.msgTime {
-  position: absolute;
-  top: 140px;
-  left: 40px;
-}
-
-.msg {
-  position: absolute;
-  top: 180px;
-  left: 40px;
-  text-align: left;
-  padding-right: 40px;
-}
-
-.imp-info {
-  display: none;
-}
-
-.message-form {
-  position: absolute;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  text-align: center;
-  bottom: 10px;
-}
-
-button {
+.attendance-form button {
   padding: 10px 20px;
   border: 1px solid black;
   outline: none;
-  margin: 15px 1px 13.5px 1px;
+  margin: 13.5px 1px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
   background-color: #efefef;
   cursor: pointer;
 }
 
-button:hover {
+.attendance-form button:hover {
   background-color: #e0ebeb;
 }
 
 /* ############### Media Queries ############### */
 
-@media screen and (max-width: 1150px) {
-  .message-card {
-    width: 50vw;
+@media screen and (max-height: 800px) {
+  .adjust-height {
+    margin-bottom: 20%;
   }
 }
 
-@media screen and (max-width: 1025px) {
-  .message-card {
-    width: 60vw;
-  }
-}
-
-@media screen and (max-width: 850px) {
-  .message-card {
-    width: 70vw;
+@media screen and (max-height: 700px) {
+  .adjust-height {
+    margin-bottom: 27%;
   }
 }

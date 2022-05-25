@@ -5,3 +5,7 @@ if(message.innerHTML === "Attendance was recorded successfully in the system." |
 }else{
   message.style.color = "red";
 }
+
+function backToHome() {
+  location.href = "http://localhost:3000/studentHome";
+}

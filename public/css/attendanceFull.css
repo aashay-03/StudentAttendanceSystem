@@ -85,6 +85,18 @@ body {
   height: calc(100vh - 75px);
 }
 
+.back-btn {
+  position: absolute;
+  top: 110px;
+  left: 40px;
+  cursor: pointer;
+  transform: scale(1.5);
+}
+
+.imp-info {
+  display: none;
+}
+
 .container .msg-textbox {
   color: red;
   margin-bottom: 15px;
@@ -92,32 +104,25 @@ body {
   line-height: 1.3;
 }
 
-.btn-box {
-  display: flex;
+.attendance-full-form {
+  display: none;
 }
 
-.container a {
-  padding: 10px 46.5px;
-  border: 1px solid black;
-  outline: none;
-  margin: 15px;
-  font-size: 1rem;
-  border-radius: 5px;
-  background-color: #efefef;
-  text-decoration: none;
+.view-message-form {
+  display: none;
 }
 
-.container button {
-  padding: 10px 5px;
+button {
+  padding: 10px 20px;
   border: 1px solid black;
   outline: none;
-  margin: 15px;
+  margin: 13.5px 1px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
   background-color: #efefef;
   cursor: pointer;
 }
 
-.container button:hover {
+button:hover {
   background-color: #e0ebeb;
 }

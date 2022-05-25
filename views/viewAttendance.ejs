@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
   <title>View Attendance</title>
   <link rel="stylesheet" href="css/viewAttendance.css">
   <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
@@ -10,12 +10,12 @@
 
 <body>
   <div class="navbar">
-    <h1 class="nameOfTeacher">Welcome <%= teacherName %>!</h1>
+    <h1 class="nameOfTeacher">Hello <%= teacherName %>!</h1>
     <a class="tooltip" href="/teacherLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
   </div>
 
   <div class="container">
-    <h1 class="heading">ATTENDANCE</h1>
+    <h1 class="heading">Attendance</h1>
     <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
     <%- include('partials/errorMsgs') %>
     <form class="view-attendance-form" action="/viewspecificattendance" method="POST">
@@ -39,7 +39,8 @@
 
       <div class="myTime">
         <div class="bound-together">
-          <label for="starting-time"><span>Accepted Time: </span>From: </label>
+          <span>Accepted Time: </span>
+          <label for="starting-time">From: </label>
           <input type="time" class="starting-time time-range" name="startingRange" value="<%=startTime%>" min="09:00" max="16:15" required>
         </div>
         <div class="bound-together">
@@ -48,7 +49,7 @@
         </div>
       </div>
 
-      <button type="submit" name="button">Get Attendance</button>
+      <button class="get-attendance-btn" type="submit" name="button">Get Attendance</button>
       <input type="hidden" name="teacherName" value="<%=teacherName%>">
       <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
       <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
@@ -60,7 +61,7 @@
       <div class="box">
         <% if(attendanceOnTime.length != 0 || attendanceNotOnTime.length != 0){ %>
           <div class="attendance-card">
-            <div class="sno">SNo.</div>
+            <div class="sno">#</div>
             <div class="nameOfStudent">Student Name</div>
             <div class="enrollnum">Enrollment Number</div>
             <div class="attendance-time">Attendance Time</div>
@@ -93,6 +94,8 @@
           <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
           <input type="hidden" name="branch" value="<%=branch%>">
           <input type="hidden" name="attendanceDate" value="<%=dateSelected%>">
+          <input type="hidden" name="startTime" value="<%=startTime%>">
+          <input type="hidden" name="endTime" value="<%=endTime%>">
         </form>
       <% } %>
     <% } %>

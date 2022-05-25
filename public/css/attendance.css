@@ -97,7 +97,7 @@ body {
   margin: 15px;
   font-size: 1rem;
   border-radius: 5px;
-  margin-bottom: 45px;
+  margin-bottom: 20px;
   cursor: pointer;
 }
 
@@ -160,4 +160,8 @@ canvas {
 
 .video-box {
   position: relative;
+}
+
+.tries-rem {
+  display: none;
 }

@@ -2,8 +2,8 @@
 <html lang="en" dir="ltr">
 
 <head>
-  <meta charset="utf-8">
-  <title>Home | Face Recognition</title>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home</title>
   <link rel="stylesheet" href="css/teacherHome.css">
 </head>
 
@@ -15,18 +15,20 @@
   </div>
 
   <div class="container">
-    <form class="view-attendance-form" action="/viewattendance" method="POST">
-      <input type="hidden" name="teacherName" value="<%=teacherName%>">
-      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
-      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
-      <button type="submit" name="button">View Attendance</button>
-    </form>
-    <form class="view-messages-form" action="/viewmessages" method="POST">
-      <input type="hidden" name="teacherName" value="<%=teacherName%>">
-      <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
-      <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
-      <button type="submit" name="button">View Messages</button>
-    </form>
+    <div class="home-box">
+      <form class="view-attendance-form" action="/viewattendance" method="POST">
+        <input type="hidden" name="teacherName" value="<%=teacherName%>">
+        <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+        <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+        <button type="submit" name="button">View Attendance</button>
+      </form>
+      <form class="view-messages-form" action="/viewmessages" method="POST">
+        <input type="hidden" name="teacherName" value="<%=teacherName%>">
+        <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
+        <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+        <button type="submit" name="button">View Messages</button>
+      </form>
+    </div>
   </div>
 
 </body>

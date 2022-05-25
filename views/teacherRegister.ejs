@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
   <title>Teacher Register</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,8 +15,8 @@
   <div class="register-box">
     <%- include('partials/errorMsgs') %>
     <form class="register-form" action="/teacherRegister" method="POST">
-      <input type="text" name="teacherName" placeholder="Name" required autofocus autocomplete="off" spellcheck="false">
-      <input type="email" name="username" placeholder="Email" required autocomplete="off" spellcheck="false">
+      <input type="text" name="teacherName" placeholder="Name" value="<%= typeof teacherName != 'undefined' ? teacherName : '' %>" required autofocus autocomplete="off" spellcheck="false">
+      <input type="email" name="username" placeholder="Email" value="<%= typeof email != 'undefined' ? email : '' %>" required autocomplete="off" spellcheck="false">
       <div class="password-field">
         <input onkeyup="trigger()" class="pass" type="password" name="password" placeholder="Password" required autocomplete="off" spellcheck="false">
         <span class="showBtn"><img class="eye-image" src="images/eye.png" alt="SHOW"></span>

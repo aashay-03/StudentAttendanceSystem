@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <title>Message</title>
     <link rel="stylesheet" href="css/messages.css">
+    <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
   </head>
   <body>
     <div class="navbar">
       <div class="left-side-box">
         <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
-        <h1 class="nameOfStudent">Welcome <%= studentName %>!</h1>
+        <h1 class="nameOfStudent">Hello <%= studentName %>!</h1>
       </div>
       <a class="tooltip" href="/logout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
     </div>
 
+    <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
+
     <div class="container">
       <h2 class="msg-textbox"><%=msg%></h2>
-      <form action="/tryagain" method="POST">
-        <button type="submit" name="button"><%=buttonText%></button>
-      </form>
     </div>
 
     <script src="js/messages.js" charset="utf-8"></script>
