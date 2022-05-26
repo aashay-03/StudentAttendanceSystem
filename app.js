@@ -236,7 +236,7 @@ app.post("/homegiveattendance", function(req, res) {
   const d = new Date();
   const day = d.getDay();
   if(day === 0){
-    res.render("messages", {msg: "Can't give attendance on Sundays.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: ""});
+    res.render("messages", {msg: "Can't give attendance on Sundays.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "", enrollmentno: "", facultyCode: "", subjectCode: ""});
   }else{
     const maxValue = 61200;
     const minValue = 32400;
@@ -245,9 +245,9 @@ app.post("/homegiveattendance", function(req, res) {
     let second = d.getSeconds();
     let currTime = (hour * 3600) + (minute * 60) + second;
     if(currTime < minValue){
-      res.render("messages", {msg: "Can't give attendance before 9AM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: ""});
+      res.render("messages", {msg: "Can't give attendance before 9AM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "", enrollmentno: "", facultyCode: "", subjectCode: ""});
     }else if(currTime > maxValue){
-      res.render("messages", {msg: "Can't give attendance after 5PM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: ""});
+      res.render("messages", {msg: "Can't give attendance after 5PM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "", enrollmentno: "", facultyCode: "", subjectCode: ""});
     }else{
       res.redirect("/giveattendance");
     }
@@ -502,7 +502,7 @@ app.post("/giveattendance", function(req, res) {
             }
           })
         } else {
-          res.render("messages", {msg: "Attendance is already marked for this subject.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance"});
+          res.render("messages", {msg: "Attendance is already marked for this subject.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
         }
       }
     });
@@ -1007,9 +1007,9 @@ app.post("/pushattendance", function(req, res) {
           currTime: currTime
         });
         attendee.save();
-        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance"});
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
       }else{
-        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance"});
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
       }
     }
   });
@@ -1090,7 +1090,7 @@ app.post("/attendanceFull", function(req, res) {
       console.log(err);
     }else{
       if(result.length === 3){
-        res.render("messages", {msg: "Can't message teacher more than three times in a month.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+        res.render("messages", {msg: "Can't message teacher more than three times in a month.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
       }else{
         res.render("messageTeacher", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
       }
@@ -1141,7 +1141,7 @@ app.post("/messageTeacher", function(req, res) {
     currTime: currTime
   });
   messageToTeacher.save();
-  res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Message"});
+  res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Message", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
 });
 
 app.post("/viewmessagesenttoteacher", function(req, res) {
