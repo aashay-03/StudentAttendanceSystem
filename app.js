@@ -509,6 +509,127 @@ app.post("/giveattendance", function(req, res) {
   }
 });
 
+app.post("/homeviewyourattendance", function(req, res) {
+  res.redirect("/viewyourattendance");
+});
+
+app.get("/viewyourattendance", ensureAuthStudent, function(req, res) {
+  const currUser = req.user._id;
+  UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
+    if(result === null){
+      res.redirect("/uploadimages");
+    }else{
+      res.render("viewYourAttendance", {studentName: req.user.studentName, enrollmentno: req.user.enrollmentno, imageUploaded: result.firstImagePath, subjectCode: "Select Subject Code", attendanceMonth: "Select Month", attendanceOfMonth: [], sundays: [], numberOfDaysInMonth: 0, key: 1, len: 0, attendanceDates: [], isGreater: false, messagesDates: [], workingDays: 0, numberOfDaysAttendanceGiven: 0, numberOfDaysAttendanceNotGiven: 0, attendanceStatus: ""});
+    }
+  });
+});
+
+app.post("/viewyourspecificeattendance", async function(req, res) {
+  console.log(req.body);
+  let errors = [];
+  if(req.body.subjectCode === "Select Subject Code"){
+    errors.push({msg: "Please Select Subject Code"});
+  }
+  if(errors.length > 0){
+    if(req.body.attendanceMonth === ""){
+      req.body.attendanceMonth = "Select Month";
+    }
+    res.render("viewYourAttendance", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, imageUploaded: req.body.imageUploaded, subjectCode: "Select Subject Code", attendanceMonth: req.body.attendanceMonth, attendanceOfMonth: [], sundays: [], numberOfDaysInMonth: 0, key: 1, len: 0, attendanceDates: [], isGreater: false, messagesDates: [], workingDays: 0, numberOfDaysAttendanceGiven: 0, numberOfDaysAttendanceNotGiven: 0, attendanceStatus: ""});
+  }else{
+    if(req.body.attendanceMonth === "Select Month"){
+      errors.push({msg: "Please Select Month"});
+    }
+    if(errors.length > 0){
+      res.render("viewYourAttendance", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, imageUploaded: req.body.imageUploaded, subjectCode: req.body.subjectCode, attendanceMonth: "Select Month", attendanceOfMonth: [], sundays: [], numberOfDaysInMonth: 0, key: 1, len: 0, attendanceDates: [], isGreater: false, messagesDates: [], workingDays: 0, numberOfDaysAttendanceGiven: 0, numberOfDaysAttendanceNotGiven: 0, attendanceStatus: ""});
+    }else{
+      let docs = await Attendance.aggregate([
+        {
+          $group: {
+            _id: {
+              studentName: "$studentName",
+              enrollmentno: "$enrollmentno",
+              branch: "$branch",
+              subjectCode: "$subjectCode",
+              facultyCode: "$facultyCode",
+              todaysDate: "$todaysDate"
+            },
+            doc: {
+              $last: "$$ROOT"
+            }
+          }
+        },
+        {
+          $replaceRoot: {
+            newRoot: "$doc"
+          }
+        }
+      ]);
+      const myArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const daysInMonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      let month = myArr.indexOf(req.body.attendanceMonth) + 1;
+      let numberOfDaysInMonth = daysInMonth[month];
+      const finalAttendance = docs.filter(function(el) {
+        return el.subjectCode === req.body.subjectCode &&
+               el.enrollmentno === req.body.enrollmentno &&
+               parseInt(el.todaysDate.split("/")[1]) === month;
+      });
+      const d = new Date();
+      let year = d.getFullYear();
+      let curMonth = d.getMonth() + 1;
+      if(curMonth === month){
+        numberOfDaysInMonth = d.getDate();
+      }
+      let isGreater = false;
+      if(month > curMonth){
+        isGreater = true;
+      }
+      const sundays = [];
+      const attendanceDates = [];
+      for(var i=1; i<=numberOfDaysInMonth; i++){
+        let currDate = "" + year + "-" + month + "-" + i;
+        const date = new Date(currDate);
+        if(date.getDay() === 0){
+          sundays.push(i);
+        }
+      }
+      const workingDays = numberOfDaysInMonth - sundays.length;
+      for(var i=0; i<finalAttendance.length; i++){
+        const myDate = parseInt(finalAttendance[i].todaysDate.substring(0, 2));
+        attendanceDates.push(myDate);
+      }
+      console.log(attendanceDates);
+      const numberOfDaysAttendanceGiven = attendanceDates.length;
+      console.log(workingDays);
+      console.log(numberOfDaysAttendanceGiven);
+      if(month >= 1 && month <= 9){
+        month = "0" + month;
+      }
+      const messagesDates = [];
+      Teachermessage.find({enrollmentno: req.body.enrollmentno, subjectCode: req.body.subjectCode, currMonth: month}, function(err, result) {
+        if(err){
+          console.log(err);
+        }else{
+          const numberOfDaysAttendanceNotGiven = workingDays - numberOfDaysAttendanceGiven - result.length;
+          console.log(numberOfDaysAttendanceNotGiven);
+          for(var i=0; i<result.length; i++){
+            const myDate = parseInt(result[i].todaysDate.substring(0, 2));
+            messagesDates.push(myDate);
+          }
+          let attendanceStatus = "";
+          if(numberOfDaysAttendanceGiven > (0.9*workingDays)){
+            attendanceStatus = "Good";
+          }else if(numberOfDaysAttendanceGiven > (0.6*workingDays)){
+            attendanceStatus = "Fine";
+          }else{
+            attendanceStatus = "Low. Please Improve Your Attendance.";
+          }
+          res.render("viewYourAttendance", {studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, imageUploaded: req.body.imageUploaded, subjectCode: req.body.subjectCode, attendanceMonth: req.body.attendanceMonth, attendanceOfMonth: finalAttendance, sundays: sundays, numberOfDaysInMonth: numberOfDaysInMonth, key: 1, len: 1, attendanceDates: attendanceDates, isGreater: isGreater, messagesDates: messagesDates, workingDays: workingDays, numberOfDaysAttendanceGiven: numberOfDaysAttendanceGiven, numberOfDaysAttendanceNotGiven: numberOfDaysAttendanceNotGiven, attendanceStatus: attendanceStatus});
+        }
+      });
+    }
+  }
+});
+
 app.post("/viewattendance", ensureAuthTeacher, function(req, res) {
   const d = new Date();
   let todaysDate = "";

@@ -1,0 +1,317 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  text-align: center;
+}
+
+.navbar {
+  background-color: #008ae6;
+  display: flex;
+  justify-content: space-between;
+  height: 76px;
+}
+
+.navbar h1 {
+  margin-left: 25px;
+  margin-top: 18.5px;
+  color: #fff;
+}
+
+.navbar .profile-photo {
+  width: 65px;
+  height: 65px;
+  margin-top: 5px;
+  border-radius: 45px;
+}
+
+.left-side-box {
+  display: flex;
+  margin-left: 25px;
+}
+
+.navbar .logout-btn {
+  width: 25px;
+  height: 25px;
+  margin-top: 25px;
+  margin-right: 25px;
+  text-decoration: none;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: #333333;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  top: 23.5px;
+  right: 108%;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltip .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent black;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.heading {
+  font-size: 3.5rem;
+  margin-top: 30px;
+}
+
+.back-btn {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  cursor: pointer;
+  transform: scale(1.5);
+}
+
+.custom-select {
+  position: relative;
+  width: 300px;
+  margin: 12px;
+  border-radius: 8px;
+  outline: none;
+  border: 1px solid black;
+  font-size: 1rem;
+}
+
+.custom-select select {
+  display: none;
+}
+
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #000 transparent transparent transparent;
+}
+
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #000 transparent;
+  top: 7px;
+}
+
+.select-items div {
+  color: #000;
+  padding: 8px 16px 8px 6.5px;
+  border: 1px solid transparent;
+  border-color: rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.select-selected {
+  color: #000;
+  padding: 8px 16px 8px 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.select-items {
+  position: absolute;
+  background-color: #fff;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: #1e90ff;
+}
+
+.view-attendance-form {
+  margin-top: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 85vw;
+}
+
+button {
+  padding: 10px 20px;
+  border: 1px solid black;
+  outline: none;
+  margin: 15px 1px 13.5px 1px;
+  font-size: 1rem;
+  border-radius: 5px;
+  background-color: #efefef;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #e0ebeb;
+}
+
+.get-attendance-btn {
+  width: 300px;
+  margin: 12px;
+}
+
+.alert-pop-up {
+  text-align: left;
+  width: 300px;
+  position: absolute;
+  top: 35px;
+}
+
+.alert-pop-up button {
+  top: -16px;
+  left: 254px;
+}
+
+.no-attendance {
+  margin-top: 20vh;
+  color: blue;
+}
+
+.monthOfAttendance {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.box {
+  width: 80vw;
+  margin-top: 60px;
+  margin-bottom: 50px;
+}
+
+.adjust-height {
+  margin-top: 430px;
+}
+
+.attendance-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+}
+
+.attendance-card div {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 12px;
+}
+
+.dateOfAttendance {
+  border: 1px solid transparent;
+  border-color: transparent rgba(0, 0, 0, 1) transparent transparent;
+  width: 25vw;
+}
+
+.attendanceResult {
+  width: 55vw;
+}
+
+.sunday {
+  color: blue;
+  background-color: #4ddbff;
+}
+
+.green {
+  color: green;
+  background-color: #B8F1B0;
+}
+
+.red {
+  color: red;
+  background-color: #FFC3C3;
+}
+
+.messageSent {
+  color: #876445;
+  background-color: #FFEBC1;
+}
+
+.attendance-result {
+  text-align: left;
+  margin-top: 30px;
+  font-size: 1.3rem;
+  line-height: 1.6;
+}
+
+/* ############### Media Queries ############### */
+
+@media screen and (max-width: 1025px) {
+  .alert-pop-up {
+    width: 266px;
+    right: 1px;
+  }
+
+  .alert-pop-up button {
+    left: 225px;
+  }
+}
+
+@media screen and (max-width: 913px) {
+  .alert-pop-up {
+    width: 230px;
+    right: 5px;
+  }
+
+  .alert-pop-up button {
+    left: 192px;
+  }
+}
+
+@media screen and (max-width: 821px) {
+  .alert-pop-up {
+    width: 205px;
+    right: 6px;
+  }
+
+  .alert-pop-up button {
+    left: 168px;
+  }
+}
+
+@media screen and (max-width: 769px) {
+  .alert-pop-up {
+    width: 188px;
+    right: 7px;
+  }
+
+  .alert-pop-up button {
+    left: 151px;
+  }
+}
