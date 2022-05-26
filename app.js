@@ -47,6 +47,13 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(function(req, res, next) {
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  next();
+});
+
 const college_code = process.env.COLLEGE_CODE;
 const mongo_database = process.env.MONGO_REMOTE;
 
@@ -200,6 +207,9 @@ app.post("/", function(req, res) {
 });
 
 app.get("/studentHome", ensureAuthStudent, function(req, res) {
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   const currUser = req.user._id;
   UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
     if(result === null){
@@ -211,6 +221,9 @@ app.get("/studentHome", ensureAuthStudent, function(req, res) {
 });
 
 app.get("/teacherHome", ensureAuthTeacher, function(req, res) {
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   res.render("teacherHome", {teacherName: req.user.teacherName, subjectCode: req.user.subjectCode, facultyCode: req.user.facultyCode});
 });
 
