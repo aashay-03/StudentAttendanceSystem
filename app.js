@@ -236,7 +236,7 @@ app.post("/homegiveattendance", function(req, res) {
   const d = new Date();
   const day = d.getDay();
   if(day === 0){
-    res.render("messages", {msg: "Can't give attendance on Sundays.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+    res.render("messages", {msg: "Can't give attendance on Sundays.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: ""});
   }else{
     const maxValue = 61200;
     const minValue = 32400;
@@ -245,9 +245,9 @@ app.post("/homegiveattendance", function(req, res) {
     let second = d.getSeconds();
     let currTime = (hour * 3600) + (minute * 60) + second;
     if(currTime < minValue){
-      res.render("messages", {msg: "Can't give attendance before 9AM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+      res.render("messages", {msg: "Can't give attendance before 9AM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: ""});
     }else if(currTime > maxValue){
-      res.render("messages", {msg: "Can't give attendance after 5PM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+      res.render("messages", {msg: "Can't give attendance after 5PM.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: ""});
     }else{
       res.redirect("/giveattendance");
     }
@@ -502,7 +502,7 @@ app.post("/giveattendance", function(req, res) {
             }
           })
         } else {
-          res.render("messages", {msg: "Attendance is already marked for this subject.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+          res.render("messages", {msg: "Attendance is already marked for this subject.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance"});
         }
       }
     });
@@ -1007,9 +1007,9 @@ app.post("/pushattendance", function(req, res) {
           currTime: currTime
         });
         attendee.save();
-        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance"});
       }else{
-        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance"});
       }
     }
   });
@@ -1141,7 +1141,30 @@ app.post("/messageTeacher", function(req, res) {
     currTime: currTime
   });
   messageToTeacher.save();
-  res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded});
+  res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Message"});
+});
+
+app.post("/viewmessagesenttoteacher", function(req, res) {
+  console.log(req.body);
+  const d = new Date();
+  let todaysDate = "";
+  let date = d.getDate();
+  if(date >= 1 && date <= 9){
+    date = "0" + date;
+  }
+  let month = d.getMonth() + 1;
+  if(month >= 1 && month <= 9){
+    month = "0" + month;
+  }
+  let year = d.getFullYear();
+  todaysDate += date + "/" + month + "/" + year;
+  Teachermessage.findOne({enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode, todaysDate: todaysDate}, function(err, result) {
+    if(err){
+      console.log(err);
+    }else{
+      res.render("showMessage", {studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msg: result});
+    }
+  });
 });
 
 app.post("/studentRegister", function(req, res) {
