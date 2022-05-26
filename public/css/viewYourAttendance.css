@@ -270,6 +270,22 @@ button:hover {
   line-height: 1.6;
 }
 
+::-webkit-scrollbar {
+  width: 1em;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #A9C9FF;
+  background-image: linear-gradient(180deg, #A9C9FF 0%, #FFBBEC 100%);
+  border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #8EC5FC;
+  background-image: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);
+  border-radius: 100vw;
+}
+
 /* ############### Media Queries ############### */
 
 @media screen and (max-width: 1025px) {
