@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+    <title>View Attendance</title>
+    <link rel="stylesheet" href="css/viewAttendanceOfSubject.css">
+    <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="left-side-box">
+        <img class="profile-photo" src="<%=imageUploaded%>" alt="profile-photo">
+        <h1 class="nameOfStudent">Hello <%= studentName %>!</h1>
+      </div>
+      <a class="tooltip" href="/studentLogout"><span class="tooltiptext">Logout</span><img class="logout-btn" src="https://img.icons8.com/external-sbts2018-mixed-sbts2018/58/000000/external-logout-social-media-basic-1-sbts2018-mixed-sbts2018.png" /></a>
+    </div>
+
+    <div class="container">
+      <h1 class="heading">Attendance</h1>
+      <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
+      <div class="input-div" method="POST">
+        <input type="text" name="subjectCode" value="<%=subjectCode%>" disabled>
+        <input type="text" name="attendanceMonth" value="<%=attendanceMonth%>" disabled>
+      </div>
+
+        <div class="box">
+        <% if(len === 1){ %>
+            <h1 class="monthOfAttendance">Month: <%=attendanceMonth%></h1>
+            <div class="attendance-card">
+              <div class="dateOfAttendance">Date</div>
+              <div class="attendanceResult">Attendance Result</div>
+            </div>
+            <% for(var i=1; i<=numberOfDaysInMonth; i++){ %>
+              <div class="attendance-card">
+                <div class="dateOfAttendance"><%=key%></div>
+                <% if(sundays.includes(i)){ %>
+                  <div class="attendanceResult sunday">Sunday</div>
+                <% }else{ %>
+                  <% var isPresent = false; %>
+                  <% if(attendanceDates.includes(i)){ %>
+                    <% isPresent = true; %>
+                    <% var myIndex = attendanceDates.indexOf(i); %>
+                    <div class="attendanceResult green">
+                      Attendance Time: <%=attendanceOfMonth[myIndex].currTime%>
+                    </div>
+                  <% } %>
+                  <% if(messagesDates.includes(i)){ %>
+                    <% isPresent = true; %>
+                    <div class="attendanceResult messageSent">Message Sent to Faculty</div>
+                  <% } %>
+                  <% if(isPresent === false){ %>
+                    <div class="attendanceResult red">
+                      No Attendance
+                    </div>
+                  <% } %>
+                <% } %>
+              </div>
+              <% key++; %>
+            <% } %>
+            <div class="attendance-result">
+              <div class="working-days">
+                Number of Working Days: <%=workingDays%>
+              </div>
+              <div class="attendance-given">
+                Number of Days Attendance Given: <%=numberOfDaysAttendanceGiven%>
+              </div>
+              <div class="attendance-not-given">
+                Number of Days Attendance Not Given: <%=numberOfDaysAttendanceNotGiven%>
+              </div>
+              <div class="status">
+                <h3 class="attendance-text">Attendance Status: <span class="attendance-status"><%=attendanceStatus%></span></h3>
+              </div>
+            </div>
+        <% } %>
+      </div>
+    </div>
+
+    <script src="js/viewAttendanceOfSubject.js" charset="utf-8"></script>
+  </body>
+</html>

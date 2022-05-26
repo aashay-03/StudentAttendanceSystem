@@ -630,6 +630,85 @@ app.post("/viewyourspecificeattendance", async function(req, res) {
   }
 });
 
+app.post("/viewattendanceofsubject", async function(req, res) {
+  let docs = await Attendance.aggregate([
+    {
+      $group: {
+        _id: {
+          studentName: "$studentName",
+          enrollmentno: "$enrollmentno",
+          branch: "$branch",
+          subjectCode: "$subjectCode",
+          facultyCode: "$facultyCode",
+          todaysDate: "$todaysDate"
+        },
+        doc: {
+          $last: "$$ROOT"
+        }
+      }
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$doc"
+      }
+    }
+  ]);
+  const myArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const d = new Date();
+  let year = d.getFullYear();
+  let curMonth = d.getMonth() + 1;
+  let month = myArr[curMonth - 1];
+  let numberOfDaysInMonth = d.getDate();
+  const finalAttendance = docs.filter(function(el) {
+    return el.subjectCode === req.body.subjectCode &&
+           el.enrollmentno === req.body.enrollmentno &&
+           parseInt(el.todaysDate.split("/")[1]) === curMonth;
+  });
+  const sundays = [];
+  const attendanceDates = [];
+  for(var i=1; i<=numberOfDaysInMonth; i++){
+    let currDate = "" + year + "-" + curMonth + "-" + i;
+    const date = new Date(currDate);
+    if(date.getDay() === 0){
+      sundays.push(i);
+    }
+  }
+  const workingDays = numberOfDaysInMonth - sundays.length;
+  for(var i=0; i<finalAttendance.length; i++){
+    const myDate = parseInt(finalAttendance[i].todaysDate.substring(0, 2));
+    attendanceDates.push(myDate);
+  }
+  console.log(attendanceDates);
+  const numberOfDaysAttendanceGiven = attendanceDates.length;
+  console.log(workingDays);
+  console.log(numberOfDaysAttendanceGiven);
+  if(curMonth >= 1 && curMonth <= 9){
+    curMonth = "0" + curMonth;
+  }
+  const messagesDates = [];
+  Teachermessage.find({enrollmentno: req.body.enrollmentno, subjectCode: req.body.subjectCode, currMonth: curMonth}, function(err, result) {
+    if(err){
+      console.log(err);
+    }else{
+      const numberOfDaysAttendanceNotGiven = workingDays - numberOfDaysAttendanceGiven - result.length;
+      console.log(numberOfDaysAttendanceNotGiven);
+      for(var i=0; i<result.length; i++){
+        const myDate = parseInt(result[i].todaysDate.substring(0, 2));
+        messagesDates.push(myDate);
+      }
+      let attendanceStatus = "";
+      if(numberOfDaysAttendanceGiven > (0.9*workingDays)){
+        attendanceStatus = "Good";
+      }else if(numberOfDaysAttendanceGiven > (0.6*workingDays)){
+        attendanceStatus = "Fine";
+      }else{
+        attendanceStatus = "Low. Please Improve Your Attendance.";
+      }
+      res.render("viewAttendanceOfSubject", {studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, subjectCode: req.body.subjectCode, attendanceMonth: month, attendanceOfMonth: finalAttendance, sundays: sundays, numberOfDaysInMonth: numberOfDaysInMonth, key: 1, len: 1, attendanceDates: attendanceDates, messagesDates: messagesDates, workingDays: workingDays, numberOfDaysAttendanceGiven: numberOfDaysAttendanceGiven, numberOfDaysAttendanceNotGiven: numberOfDaysAttendanceNotGiven, attendanceStatus: attendanceStatus});
+    }
+  });
+});
+
 app.post("/viewattendance", ensureAuthTeacher, function(req, res) {
   const d = new Date();
   let todaysDate = "";

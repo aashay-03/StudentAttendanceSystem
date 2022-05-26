@@ -76,12 +76,12 @@ function closeAllSelect(elmnt) {
 
 document.addEventListener("click", closeAllSelect);
 
-function backToHome() {
-  location.href = "http://localhost:3000/studentHome";
-}
-
 if(attendanceStatus.innerHTML === "Good" || attendanceStatus.innerHTML === "Fine"){
   attendanceText.style.color = "green";
 }else{
   attendanceText.style.color = "red";
+}
+
+function backToHome() {
+  location.href = "http://localhost:3000/studentHome";
 }

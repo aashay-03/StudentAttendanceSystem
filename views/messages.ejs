@@ -28,8 +28,13 @@
         <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
         <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
       </form>
-      <form class="view-attendance-form" action="" method="POST">
+      <form class="view-attendance-form" action="/viewattendanceofsubject" method="POST">
         <button type="submit" name="button">View Attendance</button>
+        <input type="hidden" name="studentName" value="<%=studentName%>">
+        <input type="hidden" name="enrollmentno" value="<%=enrollmentno%>">
+        <input type="hidden" name="imageUploaded" value="<%=imageUploaded%>">
+        <input type="hidden" name="facultyCode" value="<%=facultyCode%>">
+        <input type="hidden" name="subjectCode" value="<%=subjectCode%>">
       </form>
     </div>
 
