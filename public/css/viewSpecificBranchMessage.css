@@ -7,10 +7,12 @@
 
 body {
   text-align: center;
+  background-color: #d9e4f5;
+  background-image: linear-gradient(315deg, #d9e4f5 0%, #d9e4f5 74%);
 }
 
 .navbar {
-  background-color: #008ae6;
+  background-image: linear-gradient(to right, #fc5c7d, #6a82fb);
   display: flex;
   justify-content: space-between;
   height: 76px;
@@ -122,4 +124,20 @@ body {
   padding-right: 60px;
   text-align: left;
   width: 90vw;
+}
+
+::-webkit-scrollbar {
+  width: 0.9em;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #A9C9FF;
+  background-image: linear-gradient(180deg, #A9C9FF 0%, #FFBBEC 100%);
+  border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #8EC5FC;
+  background-image: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);
+  border-radius: 100vw;
 }

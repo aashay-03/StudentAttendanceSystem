@@ -7,10 +7,12 @@
 
 body {
   text-align: center;
+  background-color: #d9e4f5;
+  background-image: linear-gradient(315deg, #d9e4f5 0%, #d9e4f5 74%);
 }
 
 .navbar {
-  background-color: #008ae6;
+  background-image: linear-gradient(to right, #fc5c7d, #6a82fb);
   display: flex;
   justify-content: space-between;
   height: 76px;
@@ -271,7 +273,7 @@ button:hover {
 }
 
 ::-webkit-scrollbar {
-  width: 1em;
+  width: 0.9em;
 }
 
 ::-webkit-scrollbar-track {
