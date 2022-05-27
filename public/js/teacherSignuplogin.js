@@ -22,6 +22,8 @@ function trigger() {
   }
 }
 
+/* ############### Custom Dropdown Menu ############### */
+
 var x, i, j, l, ll, selElmnt, a, b, c;
 x = document.getElementsByClassName("custom-select");
 l = x.length;

@@ -47,7 +47,6 @@ body {
 .tooltip {
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted black;
 }
 
 .tooltip .tooltiptext {
@@ -119,6 +118,10 @@ input {
   color: #737373;
 }
 
+input[type=text]:disabled {
+  background: #F2F2F2;
+}
+
 textarea {
   padding: 10px;
   font-size: 1.2rem;
@@ -136,33 +139,48 @@ textarea {
 
 .message-teacher-form button {
   padding: 10px 20px;
-  border: 1px solid black;
+  border: 2px solid #9933ff;
+  color: #fff;
   outline: none;
   margin: 13.5px 1px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
-  background-color: #efefef;
+  background-color: #726cf8;
+  background-image: linear-gradient(315deg, #726cf8 0%, #e975a8 74%);
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .message-teacher-form button:hover {
-  background-color: #e0ebeb;
+  background-image: linear-gradient(300deg, #726cf8 0%, #e975a8 84%);
 }
 
-::-webkit-scrollbar {
+body::-webkit-scrollbar {
   width: 0.9em;
 }
 
-::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track {
   background-color: #A9C9FF;
   background-image: linear-gradient(180deg, #A9C9FF 0%, #FFBBEC 100%);
   border-radius: 100vw;
 }
 
-::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb {
   background-color: #8EC5FC;
   background-image: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);
   border-radius: 100vw;
+}
+
+textarea::-webkit-scrollbar {
+  width: 0.7em;
+}
+
+textarea::-webkit-scrollbar-track {
+  background-color: #bfbfbf;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: #999999;
 }
 
 /* ############### Media Queries ############### */

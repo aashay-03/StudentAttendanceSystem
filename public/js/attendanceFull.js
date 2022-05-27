@@ -7,7 +7,3 @@ if(buttonValue.innerHTML === "Message Teacher"){
 }else{
   viewMessageForm.style.display = "block";
 }
-
-function backToHome() {
-  location.href = "http://localhost:3000/studentHome";
-}

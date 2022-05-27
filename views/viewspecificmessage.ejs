@@ -2,8 +2,9 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
-    <title>Message</title>
+    <title>View Message</title>
     <link rel="icon" href="/images/favicon.png">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/viewSpecificMessage.css">
     <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
     <script>
@@ -27,23 +28,23 @@
         <input type="hidden" name="showOnlyUnread" value="<%=showOnlyUnread%>">
         <input type="hidden" name="branch" value="<%=branch%>">
       </form>
-      <div class="nameOfStudent">
+      <div class="nameOfStudent heading-color">
         <h3>Name: <%=msg.studentName%></h3>
       </div>
-      <div class="enrollnum">
+      <div class="enrollnum special-color">
         Enrollment No.: <%=msg.enrollmentno%>
       </div>
-      <div class="studentBranch">
+      <div class="studentBranch special-color">
         Branch: <%=msg.branch%>
       </div>
-      <div class="msgDate">
+      <div class="msgDate special-color">
         <%=msg.todaysDate%>
       </div>
-      <div class="msgTime">
+      <div class="msgTime special-color">
         <%=msg.currTime%>
       </div>
-      <h1 class="heading">Message:</h1>
-      <div class="main-msg">
+      <h1 class="heading heading-color">Message:</h1>
+      <div class="main-msg special-color">
         <%=msg.message%>
       </div>
     </div>

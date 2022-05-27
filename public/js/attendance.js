@@ -82,7 +82,7 @@ async function recognizeFaces() {
       if(detections.length === 1){
         para.style.display = "block";
         para.innerHTML = "Scanning Face...";
-        para.style.color = "black";
+        para.style.color = "#0e3564";
       }else if(detections.length === 0){
         if(diff >= 27500){
           para.style.display = "none";
@@ -151,7 +151,7 @@ function stopFunction() {
       giveAttendanceForm.submit();
     }else{
       message.innerHTML = "Taking too long to detect a face. Please check the camera quality and try again. Ensure that your face is in line with the webcam.";
-      message.style.color = "red";
+      message.style.color = "#FF2400";
       tryAgainButton.style.display = "block";
       attemptsLeft.style.display = "block";
       attemptsLeft.style.color = "red";
@@ -162,7 +162,7 @@ function stopFunction() {
       giveAttendanceForm.submit();
     }else{
       message.innerHTML = "Unable to detect a face. Please try again.";
-      message.style.color = "red";
+      message.style.color = "#FF2400";
       tryAgainButton.style.display = "block";
       attemptsLeft.style.display = "block";
       attemptsLeft.style.color = "red";
@@ -170,7 +170,7 @@ function stopFunction() {
   }else{
     document.querySelector("canvas").style.display = "none";
     message.innerHTML = "Attendance was recorded successfully in the system.";
-    message.style.color = "green";
+    message.style.color = "#018749";
     attendanceForm.submit();
     return;
   }

@@ -5,6 +5,7 @@
   <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
   <title>View Attendance</title>
   <link rel="icon" href="/images/favicon.png">
+  <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/viewAttendance.css">
   <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
   <script>
@@ -22,7 +23,7 @@
 
   <div class="container">
     <h1 class="heading">Attendance</h1>
-    <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
+    <box-icon class="back-btn" name="arrow-back" onclick="backToHomeTeacher()"></box-icon>
     <%- include('partials/errorMsgs') %>
     <form class="view-attendance-form" action="/viewspecificattendance" method="POST">
       <input class="hidden-input" type="hidden" name="branch" value="<%=branch%>">
@@ -108,6 +109,7 @@
   </div>
 
   <script src="js/viewAttendance.js" charset="utf-8"></script>
+  <script src="js/index.js" charset="utf-8"></script>
 </body>
 
 </html>

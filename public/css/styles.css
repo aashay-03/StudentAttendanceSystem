@@ -6,10 +6,11 @@
 }
 
 body {
-  text-align: center;
   background-color: #d9e4f5;
   background-image: linear-gradient(315deg, #d9e4f5 0%, #d9e4f5 74%);
 }
+
+/* ############### Navbar ############### */
 
 .navbar {
   background-image: linear-gradient(to right, #fc5c7d, #6a82fb);
@@ -43,6 +44,8 @@ body {
   margin-right: 25px;
   text-decoration: none;
 }
+
+/* ############### Tooltip ############### */
 
 .tooltip {
   position: relative;
@@ -78,94 +81,7 @@ body {
   border-color: transparent transparent transparent black;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - 76px);
-}
-
-.container p {
-  margin-top: 15px;
-  color: #000;
-}
-
-.container button {
-  padding: 10px 20px;
-  border: 2px solid #9933ff;
-  color: #fff;
-  outline: none;
-  margin: 15px;
-  font-size: 1rem;
-  border-radius: 5px;
-  margin-bottom: 20px;
-  background-color: #726cf8;
-  background-image: linear-gradient(315deg, #726cf8 0%, #e975a8 74%);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.container button:hover {
-  background-image: linear-gradient(300deg, #726cf8 0%, #e975a8 84%);
-}
-
-.container .msg-textbox {
-  display: none;
-  margin-bottom: 9px;
-  padding: 0 15%;
-}
-
-.try-again-btn {
-  display: none;
-}
-
-.push-attendance-to-db {
-  display: none;
-}
-
-canvas {
-  width: 480px;
-  position: absolute;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  top: 0;
-  text-align: center;
-}
-
-.imp-info {
-  display: none;
-}
-
-.first-image {
-  display: none;
-}
-
-.second-image {
-  display: none;
-}
-
-.third-image {
-  display: none;
-}
-
-.video {
-  display: none;
-}
-
-.videoDesc {
-  display: none;
-}
-
-.video-box {
-  position: relative;
-}
-
-.tries-rem {
-  display: none;
-}
+/* ############### Scrollbar ############### */
 
 ::-webkit-scrollbar {
   width: 0.9em;

@@ -55,6 +55,9 @@ app.use(function(req, res, next) {
 });
 
 const college_code = process.env.COLLEGE_CODE;
+
+/* ############### Database Connection ############### */
+
 const mongo_database = process.env.MONGO_REMOTE;
 
 mongoose.connect(`${mongo_database}`, {
@@ -63,6 +66,8 @@ mongoose.connect(`${mongo_database}`, {
   })
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
+
+/* ############### Schemas ############### */
 
 const studentSchema = new mongoose.Schema({
   email: String,
@@ -161,29 +166,13 @@ passport.deserializeUser(function(user, done) {
     done(null,user);
 });
 
-app.get("/studentLogin", ensureGuestStudent, function(req, res) {
-  res.render("studentLogin");
-});
-
-app.get("/studentRegister", ensureGuestStudent, function(req, res) {
-  res.render("studentRegister");
-});
-
-app.get("/teacherLogin", ensureGuestTeacher, function(req, res) {
-  res.render("teacherLogin");
-});
-
-app.get("/teacherRegister", ensureGuestTeacher, function(req, res) {
-  res.render("teacherRegister");
-});
+/* ############### Home Route ############### */
 
 app.get("/", function(req, res) {
   try {
     const currUser = req.user;
-    console.log(currUser);
     try {
       const my_user = currUser.role;
-      console.log(my_user);
       if(my_user === "Teacher"){
         res.redirect("/teacherHome");
       }else{
@@ -198,13 +187,99 @@ app.get("/", function(req, res) {
 });
 
 app.post("/", function(req, res) {
-  console.log(req.body.button);
   if(req.body.button === "teacher"){
     res.redirect("teacherLogin");
   }else{
     res.redirect("studentLogin");
   }
 });
+
+/* ############### Student Section ############### */
+
+app.get("/studentLogin", ensureGuestStudent, function(req, res) {
+  res.render("studentLogin");
+});
+
+app.post("/studentLogin", passport.authenticate("student-local", {
+  successRedirect: "/studentHome",
+  failureRedirect: "/studentLogin",
+  failureFlash: true
+}));
+
+app.get("/studentRegister", ensureGuestStudent, function(req, res) {
+  res.render("studentRegister");
+});
+
+app.post("/studentRegister", function(req, res) {
+  const email = req.body.username;
+  const studentName = req.body.studentName;
+  const enrollmentno = req.body.enrollmentno;
+  const branch = req.body.branch;
+  let errors = [];
+  if (req.body.branch === "") {
+    errors.push({msg: "Please Select branch"});
+  }
+  if (errors.length > 0) {
+    res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+  }else{
+    if(/^[a-zA-Z ]+$/.test(req.body.studentName) === false){
+      errors.push({msg: "Please enter correct name"});
+    }
+    if(errors.length > 0){
+      res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+    }else{
+      if (req.body.password.length < 6) {
+        errors.push({msg: "Password should be atleast 6 characters"});
+      }
+      if (req.body.password.length > 15) {
+        errors.push({msg: "Password should not exceed 15 characters"});
+      }
+      if (errors.length > 0) {
+        res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+      } else {
+        if (req.body.enrollmentno.length != 11) {
+          errors.push({msg: "Enrollment Number should have 11 digits"});
+        }
+        if (errors.length > 0) {
+          res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+        } else {
+          if (req.body.enrollmentno.match(/^[0-9]+$/) == null) {
+            errors.push({msg: "Enrollment Number should consist of digits only"});
+          }
+          if (errors.length > 0) {
+            res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+          } else {
+              Student.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
+                if(err){
+                  console.log(err);
+                }else{
+                  if (result != null) {
+                    errors.push({msg: "Invalid Enrollment Number"});
+                    if (errors.length > 0) {
+                      res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
+                    }
+                  }else{
+                    Student.register({username: req.body.username, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, role: "Student"}, req.body.password, function(err, user) {
+                      if (err) {
+                        errors.push({msg: "Email is already registered"})
+                        res.render("studentRegister", {errors, studentName,email, enrollmentno, branch});
+                      } else {
+                        passport.authenticate("student-local")(req, res, function() {
+                          res.redirect("/uploadimages");
+                        });
+                      }
+                    });
+                  }
+                }
+              });
+            }
+          }
+        }
+    }
+  }
+});
+
+/* ############### Student Home ############### */
 
 app.get("/studentHome", ensureAuthStudent, function(req, res) {
   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -220,12 +295,7 @@ app.get("/studentHome", ensureAuthStudent, function(req, res) {
   });
 });
 
-app.get("/teacherHome", ensureAuthTeacher, function(req, res) {
-  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-  res.render("teacherHome", {teacherName: req.user.teacherName, subjectCode: req.user.subjectCode, facultyCode: req.user.facultyCode});
-});
+/* ############### Upload Images ############### */
 
 app.get("/uploadimages", ensureAuthStudent, function(req, res) {
   const currUser = req.user._id;
@@ -244,14 +314,75 @@ app.get("/uploadimages", ensureAuthStudent, function(req, res) {
   });
 });
 
+app.post("/uploadimages", function(req, res) {
+  let errors = [];
+  const firstImage = req.files.firstImage;
+  const secondImage = req.files.secondImage;
+  const thirdImage = req.files.thirdImage;
+  if((firstImage.md5 === secondImage.md5) || (firstImage.md5 === thirdImage.md5) || (secondImage.md5 === thirdImage.md5)){
+    errors.push({msg: "All photos should be distinct"});
+    res.render("uploadImages", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno});
+  }else{
+    const imagesuploaded = new UploadedImages({
+      enrollmentno: req.body.enrollmentno,
+      firstImagePath: "Link1",
+      secondImagePath: "Link2",
+      thirdImagePath: "Link3"
+    });
+    imagesuploaded.save();
+    const query = {enrollmentno: req.body.enrollmentno};
+    let img1 = false, img2 = false, img3 = false;
+    cloudinary.uploader.upload(firstImage.tempFilePath, (err, result) => {
+      const firstLink = result.url;
+      UploadedImages.findOneAndUpdate(query, {firstImagePath: firstLink}, function(err, result){
+        if(err){
+          console.log(err);
+        }else{
+          img1 = true;
+          if(img1 && img2 && img3){
+            res.redirect("/studentHome");
+          }
+        }
+      });
+    });
+    cloudinary.uploader.upload(secondImage.tempFilePath, (err, result) => {
+      const secondLink = result.url;
+      UploadedImages.findOneAndUpdate(query, {secondImagePath: secondLink}, function(err, result){
+        if(err){
+          console.log(err);
+        }else{
+          img2 = true;
+          if(img1 && img2 && img3){
+            res.redirect("/studentHome");
+          }
+        }
+      });
+    });
+    cloudinary.uploader.upload(thirdImage.tempFilePath, (err, result) => {
+      const thirdLink = result.url;
+      UploadedImages.findOneAndUpdate(query, {thirdImagePath: thirdLink}, function(err, result){
+        if(err){
+          console.log(err);
+        }else{
+          img3 = true;
+          if(img1 && img2 && img3){
+            res.redirect("/studentHome");
+          }
+        }
+      });
+    });
+  }
+});
+
+/* ############### Give Attendance ############### */
+
 app.post("/homegiveattendance", function(req, res) {
-  console.log(req.body);
   const d = new Date();
   const day = d.getDay();
   if(day === 0){
     res.render("messages", {msg: "Can't give attendance on Sundays.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "", enrollmentno: "", facultyCode: "", subjectCode: ""});
   }else{
-    const maxValue = 61200;
+    const maxValue = 81200;
     const minValue = 32400;
     let hour = d.getHours();
     let minute = d.getMinutes();
@@ -266,6 +397,254 @@ app.post("/homegiveattendance", function(req, res) {
     }
   }
 });
+
+app.get("/giveattendance", ensureAuthStudent, function(req, res) {
+  const currUser = req.user._id;
+  UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
+    if(result === null){
+      res.redirect("/uploadimages");
+    }else{
+      res.render("giveAttendance", {studentName: req.user.studentName, username: req.user.username, enrollmentno: req.user.enrollmentno, branch: req.user.branch, imageUploaded: result.firstImagePath});
+    }
+  });
+});
+
+app.post("/giveattendance", function(req, res) {
+  const currUser = req.body.username;
+  let errors = [];
+  if(req.body.subjectCode === "Select Subject Code"){
+    errors.push({msg: "Please Select Subject Code"});
+  }
+  if(errors.length > 0){
+    res.render("giveAttendance", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: currUser, imageUploaded: req.body.imageUploaded});
+  }else{
+    const d = new Date();
+    let todaysDate = "";
+    let date = d.getDate();
+    if(date >= 1 && date <= 9){
+      date = "0" + date;
+    }
+    let month = d.getMonth() + 1;
+    if(month >= 1 && month <= 9){
+      month = "0" + month;
+    }
+    let year = d.getFullYear();
+    todaysDate += date + "/" + month + "/" + year;
+    let currTime = "";
+    let hour = d.getHours();
+    if(hour >= 0 && hour <= 9){
+      hour = "0" + hour;
+    }
+    let minute = d.getMinutes();
+    if(minute >= 0 && minute <= 9){
+      minute = "0" + minute;
+    }
+    let second = d.getSeconds();
+    if(second >= 0 && second <= 9){
+      second = "0" + second;
+    }
+    currTime += hour + ":" + minute + ":" + second;
+    Attendance.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, function(err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (result === null) {
+          Validateattendance.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, function(err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              if (result === null) {
+                const attendancevalidator = new Validateattendance({
+                  enrollmentno: req.body.enrollmentno,
+                  tries: 1,
+                  subjectCode: req.body.subjectCode,
+                  facultyCode: req.body.facultyCode,
+                  todaysDate: todaysDate,
+                  currTime: currTime
+                });
+                attendancevalidator.save();
+                UploadedImages.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
+                  if(err){
+                    console.log(err);
+                  }else{
+                    res.render("attendance", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, triesRem: 4});
+                  }
+                });
+              } else {
+                const tryVar = result.tries + 1;
+                if (tryVar === 6) {
+                  Teachermessage.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode}, function(err, result) {
+                    if(err){
+                      console.log(err);
+                    }else{
+                      if(result === null){
+                        res.render("attendanceFull", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, buttonValue: "Message Teacher"});
+                      }else{
+                        res.render("attendanceFull", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, buttonValue: "View Message"});
+                      }
+                    }
+                  });
+                } else {
+                  Validateattendance.findOneAndUpdate({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, {tries: tryVar, currTime: currTime}, function(err, result) {
+                    if (err) {
+                      console.log(err);
+                    }
+                  });
+                  UploadedImages.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
+                    if(err){
+                      console.log(err);
+                    }else{
+                      res.render("attendance", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, triesRem: (5 - tryVar)});
+                    }
+                  });
+                }
+              }
+            }
+          })
+        } else {
+          res.render("messages", {msg: "Attendance is already marked for this subject.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
+        }
+      }
+    });
+  }
+});
+
+app.post("/pushattendance", function(req, res) {
+  const d = new Date();
+  let todaysDate = "";
+  let date = d.getDate();
+  if(date >= 0 && date <= 9){
+    date = "0" + date;
+  }
+  let month = d.getMonth() + 1;
+  if(month >= 1 && month <= 9){
+    month = "0" + month;
+  }
+  let year = d.getFullYear();
+  todaysDate += date + "/" + month + "/" + year;
+  let currTime = "";
+  let hour = d.getHours();
+  if(hour >= 0 && hour <= 9){
+    hour = "0" + hour;
+  }
+  let minute = d.getMinutes();
+  if(minute >= 0 && minute <= 9){
+    minute = "0" + minute;
+  }
+  let second = d.getSeconds();
+  if(second >= 0 && second <= 9){
+    second = "0" + second;
+  }
+  currTime += hour + ":" + minute + ":" + second;
+  Attendance.findOne({enrollmentno: req.body.enrollmentno, subjectCode: req.body.subjectCode, todaysDate: todaysDate}, function(err, result){
+    if(err){
+      console.log(err);
+    }else{
+      if(result === null){
+        const attendee = new Attendance({
+          studentName: req.body.studentName,
+          enrollmentno: req.body.enrollmentno,
+          branch: req.body.branch,
+          subjectCode: req.body.subjectCode,
+          facultyCode: req.body.facultyCode,
+          todaysDate: todaysDate,
+          currTime: currTime
+        });
+        attendee.save();
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
+      }else{
+        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
+      }
+    }
+  });
+});
+
+app.post("/attendanceFull", function(req, res) {
+  const d = new Date();
+  const month = d.getMonth() + 1;
+  Teachermessage.find({enrollmentno: req.body.enrollmentno, subjectCode: req.body.subjectCode, currMonth: month}, function(err, result) {
+    if(err){
+      console.log(err);
+    }else{
+      if(result.length === 3){
+        res.render("messages", {msg: "Can't message teacher more than three times in a month.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
+      }else{
+        res.render("messageTeacher", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
+      }
+    }
+  });
+});
+
+/* ############### Message Teacher ############### */
+
+app.post("/messageTeacher", function(req, res) {
+  const d = new Date();
+  let todaysDate = "";
+  let date = d.getDate();
+  if(date >= 1 && date <= 9){
+    date = "0" + date;
+  }
+  let month = d.getMonth() + 1;
+  if(month >= 1 && month <= 9){
+    month = "0" + month;
+  }
+  let year = d.getFullYear();
+  todaysDate += date + "/" + month + "/" + year;
+  let currTime = "";
+  let hour = d.getHours();
+  if(hour >= 0 && hour <= 9){
+    hour = "0" + hour;
+  }
+  let minute = d.getMinutes();
+  if(minute >= 0 && minute <= 9){
+    minute = "0" + minute;
+  }
+  let second = d.getSeconds();
+  if(second >= 0 && second <= 9){
+    second = "0" + second;
+  }
+  currTime += hour + ":" + minute + ":" + second;
+  const messageToTeacher = new Teachermessage({
+    studentName: req.body.studentName,
+    username: req.body.username,
+    enrollmentno: req.body.enrollmentno,
+    branch: req.body.branch,
+    imageUploaded: req.body.imageUploaded,
+    subjectCode: req.body.subjectCode,
+    facultyCode: req.body.facultyCode,
+    message: req.body.messageForTeacher,
+    status: "Unread",
+    currMonth: month,
+    todaysDate: todaysDate,
+    currTime: currTime
+  });
+  messageToTeacher.save();
+  res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Message", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
+});
+
+app.post("/viewmessagesenttoteacher", function(req, res) {
+  const d = new Date();
+  let todaysDate = "";
+  let date = d.getDate();
+  if(date >= 1 && date <= 9){
+    date = "0" + date;
+  }
+  let month = d.getMonth() + 1;
+  if(month >= 1 && month <= 9){
+    month = "0" + month;
+  }
+  let year = d.getFullYear();
+  todaysDate += date + "/" + month + "/" + year;
+  Teachermessage.findOne({enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode, todaysDate: todaysDate}, function(err, result) {
+    if(err){
+      console.log(err);
+    }else{
+      res.render("showMessage", {studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msg: result});
+    }
+  });
+});
+
+/* ############### View Messages ############### */
 
 app.post("/homeviewyourmessages", function(req, res) {
   res.redirect("/viewyourmessages");
@@ -301,7 +680,6 @@ app.get("/viewyourmessages", ensureAuthStudent, function(req, res) {
 });
 
 app.post("/viewmymessages", function(req, res) {
-  console.log(req.body);
   if(req.body.facultyCode === "All Messages"){
     req.body.facultyCode = "Select Faculty Code";
   }
@@ -399,7 +777,6 @@ app.post("/viewmymessages", function(req, res) {
 });
 
 app.post("/viewparticularmessage", function(req, res) {
-  console.log(req.body);
   Teachermessage.findOne({_id: req.body.messageId}, function(err, result) {
     if(err){
       console.log(err);
@@ -409,118 +786,7 @@ app.post("/viewparticularmessage", function(req, res) {
   });
 });
 
-app.get("/giveattendance", ensureAuthStudent, function(req, res) {
-  const currUser = req.user._id;
-  UploadedImages.findOne({enrollmentno: req.user.enrollmentno}, function(err, result) {
-    if(result === null){
-      res.redirect("/uploadimages");
-    }else{
-      res.render("giveAttendance", {studentName: req.user.studentName, username: req.user.username, enrollmentno: req.user.enrollmentno, branch: req.user.branch, imageUploaded: result.firstImagePath});
-    }
-  });
-});
-
-app.post("/giveattendance", function(req, res) {
-  console.log(req.body);
-  const currUser = req.body.username;
-  let errors = [];
-  if(req.body.subjectCode === "Select Subject Code"){
-    errors.push({msg: "Please Select Subject Code"});
-  }
-  if(errors.length > 0){
-    res.render("giveAttendance", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, username: currUser, imageUploaded: req.body.imageUploaded});
-  }else{
-    const d = new Date();
-    let todaysDate = "";
-    let date = d.getDate();
-    if(date >= 1 && date <= 9){
-      date = "0" + date;
-    }
-    let month = d.getMonth() + 1;
-    if(month >= 1 && month <= 9){
-      month = "0" + month;
-    }
-    let year = d.getFullYear();
-    todaysDate += date + "/" + month + "/" + year;
-    let currTime = "";
-    let hour = d.getHours();
-    if(hour >= 0 && hour <= 9){
-      hour = "0" + hour;
-    }
-    let minute = d.getMinutes();
-    if(minute >= 0 && minute <= 9){
-      minute = "0" + minute;
-    }
-    let second = d.getSeconds();
-    if(second >= 0 && second <= 9){
-      second = "0" + second;
-    }
-    currTime += hour + ":" + minute + ":" + second;
-    Attendance.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, function(err, result) {
-      if (err) {
-        console.log(err);
-      } else {
-        if (result === null) {
-          Validateattendance.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, function(err, result) {
-            if (err) {
-              console.log(err);
-            } else {
-              if (result === null) {
-                const attendancevalidator = new Validateattendance({
-                  enrollmentno: req.body.enrollmentno,
-                  tries: 1,
-                  subjectCode: req.body.subjectCode,
-                  facultyCode: req.body.facultyCode,
-                  todaysDate: todaysDate,
-                  currTime: currTime
-                });
-                attendancevalidator.save();
-                UploadedImages.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
-                  if(err){
-                    console.log(err);
-                  }else{
-                    res.render("attendance", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, triesRem: 4});
-                  }
-                });
-              } else {
-                const tryVar = result.tries + 1;
-                console.log(tryVar);
-                if (tryVar === 6) {
-                  Teachermessage.findOne({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode}, function(err, result) {
-                    if(err){
-                      console.log(err);
-                    }else{
-                      if(result === null){
-                        res.render("attendanceFull", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, buttonValue: "Message Teacher"});
-                      }else{
-                        res.render("attendanceFull", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, buttonValue: "View Message"});
-                      }
-                    }
-                  });
-                } else {
-                  Validateattendance.findOneAndUpdate({enrollmentno: req.body.enrollmentno, todaysDate: todaysDate, subjectCode: req.body.subjectCode}, {tries: tryVar, currTime: currTime}, function(err, result) {
-                    if (err) {
-                      console.log(err);
-                    }
-                  });
-                  UploadedImages.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
-                    if(err){
-                      console.log(err);
-                    }else{
-                      res.render("attendance", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded, firstImage: result.firstImagePath, triesRem: (5 - tryVar)});
-                    }
-                  });
-                }
-              }
-            }
-          })
-        } else {
-          res.render("messages", {msg: "Attendance is already marked for this subject.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
-        }
-      }
-    });
-  }
-});
+/* ############### View Attendance ############### */
 
 app.post("/homeviewyourattendance", function(req, res) {
   res.redirect("/viewyourattendance");
@@ -538,7 +804,6 @@ app.get("/viewyourattendance", ensureAuthStudent, function(req, res) {
 });
 
 app.post("/viewyourspecificeattendance", async function(req, res) {
-  console.log(req.body);
   let errors = [];
   if(req.body.subjectCode === "Select Subject Code"){
     errors.push({msg: "Please Select Subject Code"});
@@ -610,10 +875,7 @@ app.post("/viewyourspecificeattendance", async function(req, res) {
         const myDate = parseInt(finalAttendance[i].todaysDate.substring(0, 2));
         attendanceDates.push(myDate);
       }
-      console.log(attendanceDates);
       const numberOfDaysAttendanceGiven = attendanceDates.length;
-      console.log(workingDays);
-      console.log(numberOfDaysAttendanceGiven);
       if(month >= 1 && month <= 9){
         month = "0" + month;
       }
@@ -623,7 +885,6 @@ app.post("/viewyourspecificeattendance", async function(req, res) {
           console.log(err);
         }else{
           const numberOfDaysAttendanceNotGiven = workingDays - numberOfDaysAttendanceGiven - result.length;
-          console.log(numberOfDaysAttendanceNotGiven);
           for(var i=0; i<result.length; i++){
             const myDate = parseInt(result[i].todaysDate.substring(0, 2));
             messagesDates.push(myDate);
@@ -691,10 +952,7 @@ app.post("/viewattendanceofsubject", async function(req, res) {
     const myDate = parseInt(finalAttendance[i].todaysDate.substring(0, 2));
     attendanceDates.push(myDate);
   }
-  console.log(attendanceDates);
   const numberOfDaysAttendanceGiven = attendanceDates.length;
-  console.log(workingDays);
-  console.log(numberOfDaysAttendanceGiven);
   if(curMonth >= 1 && curMonth <= 9){
     curMonth = "0" + curMonth;
   }
@@ -704,7 +962,6 @@ app.post("/viewattendanceofsubject", async function(req, res) {
       console.log(err);
     }else{
       const numberOfDaysAttendanceNotGiven = workingDays - numberOfDaysAttendanceGiven - result.length;
-      console.log(numberOfDaysAttendanceNotGiven);
       for(var i=0; i<result.length; i++){
         const myDate = parseInt(result[i].todaysDate.substring(0, 2));
         messagesDates.push(myDate);
@@ -721,6 +978,99 @@ app.post("/viewattendanceofsubject", async function(req, res) {
     }
   });
 });
+
+/* ############### Teacher Section ############### */
+
+app.get("/teacherLogin", ensureGuestTeacher, function(req, res) {
+  res.render("teacherLogin");
+});
+
+app.post("/teacherLogin", passport.authenticate("teacher-local", {
+  successRedirect: "/teacherHome",
+  failureRedirect: "/teacherLogin",
+  failureFlash: true
+}));
+
+app.get("/teacherRegister", ensureGuestTeacher, function(req, res) {
+  res.render("teacherRegister");
+});
+
+app.post("/teacherRegister", function(req, res) {
+  const email = req.body.username;
+  const teacherName = req.body.teacherName;
+  const facultyCode = req.body.facultyCode;
+  const subjectCode = req.body.subjectCode;
+  let errors = [];
+  if(req.body.facultyCode === ""){
+    errors.push({msg: "Please Select Faculty Code"});
+  }
+  if(errors.length > 0){
+    res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+  }else{
+    if(/^[a-zA-Z ]+$/.test(req.body.teacherName) === false){
+      errors.push({msg: "Please enter correct name"});
+    }
+    if(errors.length > 0){
+      res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+    }else{
+      if (req.body.password.length < 6) {
+        errors.push({msg: "Password should be atleast 6 characters"});
+      }
+      if (req.body.password.length > 15) {
+        errors.push({msg: "Password should not exceed 15 characters"});
+      }
+      if(errors.length > 0){
+        res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+      }else{
+        if(req.body.collegeCode != college_code){
+          errors.push({msg: "Incorrect College Code"});
+        }
+        if(errors.length > 0){
+          res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+        }else{
+          Teacher.findOne({facultyCode: req.body.facultyCode}, function(err, result) {
+            if(err){
+              console.log(err);
+            }else{
+              if(result != null){
+                errors.push({msg: "Invalid Faculty Code"});
+                if(errors.length > 0){
+                  res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+                }
+              }else{
+                Teacher.register({username: req.body.username, teacherName: req.body.teacherName, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode, role: "Teacher"}, req.body.password, function(err, user) {
+                  if (err) {
+                    errors.push({msg: "Email is already registered"})
+                    res.render("teacherRegister", {errors, teacherName, email, facultyCode});
+                  } else {
+                    passport.authenticate("teacher-local")(req, res, function() {
+                      res.redirect("/teacherHome");
+                    });
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    }
+  }
+});
+
+/* ############### Teacher Home ############### */
+
+app.get("/teacherHome", ensureAuthTeacher, function(req, res) {
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.render("teacherHome", {teacherName: req.user.teacherName, subjectCode: req.user.subjectCode, facultyCode: req.user.facultyCode});
+});
+
+app.post("/takemehome", function(req, res) {
+  res.redirect("/teacherHome");
+});
+
+/* ############### View Attendance ############### */
 
 app.post("/viewattendance", ensureAuthTeacher, function(req, res) {
   const d = new Date();
@@ -739,7 +1089,6 @@ app.post("/viewattendance", ensureAuthTeacher, function(req, res) {
 });
 
 app.post("/viewspecificattendance", async function(req, res) {
-  console.log(req.body);
   const startTime = req.body.startingRange;
   const endTime = req.body.endingRange;
   if(req.body.attendanceDate.includes("/")){
@@ -818,8 +1167,6 @@ app.post("/viewspecificattendance", async function(req, res) {
       }
       let attYear = parseInt(myArr[0]);
       attDate += attDay + "/" + attMonth + "/" + attYear;
-      console.log(attDate);
-      // console.log(docs);
       let startingTime = req.body.startingRange;
       startingTime += ":00";
       let endingTime = req.body.endingRange;
@@ -830,8 +1177,6 @@ app.post("/viewspecificattendance", async function(req, res) {
       secondDate += endingTime;
       const firstDateFinal = new Date(firstDate);
       const secondDateFinal = new Date(secondDate);
-      console.log(firstDateFinal);
-      console.log(secondDateFinal);
       const finalAttendance = docs.filter(function(el) {
         return el.subjectCode === req.body.subjectCode &&
                el.facultyCode === req.body.facultyCode &&
@@ -841,7 +1186,6 @@ app.post("/viewspecificattendance", async function(req, res) {
       finalAttendance.sort(function(a, b) {
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
-      console.log(finalAttendance);
       const onTimeAttendance = finalAttendance.filter(function(el) {
         return el.createdAt >= firstDateFinal &&
                el.createdAt <= secondDateFinal;
@@ -855,8 +1199,9 @@ app.post("/viewspecificattendance", async function(req, res) {
   }
 });
 
+/* ############### View Messages ############### */
+
 app.post("/viewmessages", ensureAuthTeacher, function(req, res) {
-  console.log(req.body);
   let date = new Date();
   date.setDate(date.getDate() - 15);
   Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Unread", "createdAt": {"$gte": date}}, function(err, unreadMessages){
@@ -867,9 +1212,6 @@ app.post("/viewmessages", ensureAuthTeacher, function(req, res) {
         if(err){
           console.log(err);
         }else{
-          console.log(readMessages);
-          console.log(unreadMessages);
-          console.log(req.body.teacherName);
           res.render("viewMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: "Select Branch"});
         }
       });
@@ -878,7 +1220,6 @@ app.post("/viewmessages", ensureAuthTeacher, function(req, res) {
 });
 
 app.post("/showBranchMessages", function(req, res) {
-  console.log(req.body);
   if(req.body.showOnlyUnread === "on" || req.body.showOnlyUnread === "checked"){
     Teachermessage.find({subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, status: "Unread", branch: req.body.branch, todaysDate: req.body.attendanceDate}, function(err, unreadMessages){
       if(err){
@@ -902,7 +1243,6 @@ app.post("/showBranchMessages", function(req, res) {
           if(err){
             console.log(err);
           }else{
-            console.log(req.body.teacherName);
             res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: req.body.attendanceDate, startTime: req.body.startTime, endTime: req.body.endTime});
           }
         });
@@ -912,7 +1252,6 @@ app.post("/showBranchMessages", function(req, res) {
 });
 
 app.post("/showMessages", function(req, res) {
-  console.log(req.body);
   let date = new Date();
   date.setDate(date.getDate() - 15);
   let branchSelected;
@@ -944,7 +1283,6 @@ app.post("/showMessages", function(req, res) {
             if(err){
               console.log(err);
             }else{
-              console.log(req.body.teacherName);
               res.render("viewMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: "", branchValue: branchSelected});
             }
           });
@@ -976,7 +1314,6 @@ app.post("/showMessages", function(req, res) {
             if(err){
               console.log(err);
             }else{
-              console.log(req.body.teacherName);
               res.render("viewMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, branchValue: branchSelected});
             }
           });
@@ -987,7 +1324,6 @@ app.post("/showMessages", function(req, res) {
 });
 
 app.post("/viewbranchmessages", function(req, res) {
-  console.log(req.body);
   const myArr = req.body.attendanceDate.split("-");
   let todaysDate = "";
   let day = parseInt(myArr[2]);
@@ -1008,7 +1344,6 @@ app.post("/viewbranchmessages", function(req, res) {
         if(err){
           console.log(err);
         }else{
-          console.log(req.body.teacherName);
           res.render("viewBranchMessages", {teacherName: req.body.teacherName, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, unreadMessages: unreadMessages, readMessages: readMessages, key: 0, checked: "", msgCount: (unreadMessages.length+readMessages.length), branch: req.body.branch, attendanceDate: todaysDate, startTime: req.body.startTime, endTime: req.body.endTime});
         }
       });
@@ -1033,7 +1368,6 @@ app.post("/viewspecificbranchmessage", function(req, res) {
 });
 
 app.post("/viewspecificmessage", function(req, res) {
-  console.log(req.body);
   if(req.body.branch === "All Branches"){
     req.body.branch = "";
   }
@@ -1052,357 +1386,7 @@ app.post("/viewspecificmessage", function(req, res) {
   });
 });
 
-app.post("/takemehome", function(req, res) {
-  res.redirect("/teacherHome");
-});
-
-app.post("/pushattendance", function(req, res) {
-  console.log(req.body);
-  const d = new Date();
-  let todaysDate = "";
-  let date = d.getDate();
-  if(date >= 0 && date <= 9){
-    date = "0" + date;
-  }
-  let month = d.getMonth() + 1;
-  if(month >= 1 && month <= 9){
-    month = "0" + month;
-  }
-  let year = d.getFullYear();
-  todaysDate += date + "/" + month + "/" + year;
-  let currTime = "";
-  let hour = d.getHours();
-  if(hour >= 0 && hour <= 9){
-    hour = "0" + hour;
-  }
-  let minute = d.getMinutes();
-  if(minute >= 0 && minute <= 9){
-    minute = "0" + minute;
-  }
-  let second = d.getSeconds();
-  if(second >= 0 && second <= 9){
-    second = "0" + second;
-  }
-  currTime += hour + ":" + minute + ":" + second;
-  Attendance.findOne({enrollmentno: req.body.enrollmentno, subjectCode: req.body.subjectCode, todaysDate: todaysDate}, function(err, result){
-    if(err){
-      console.log(err);
-    }else{
-      if(result === null){
-        const attendee = new Attendance({
-          studentName: req.body.studentName,
-          enrollmentno: req.body.enrollmentno,
-          branch: req.body.branch,
-          subjectCode: req.body.subjectCode,
-          facultyCode: req.body.facultyCode,
-          todaysDate: todaysDate,
-          currTime: currTime
-        });
-        attendee.save();
-        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
-      }else{
-        res.render("messages", {msg: "Attendance was recorded successfully in the system.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Attendance", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
-      }
-    }
-  });
-});
-
-app.post("/uploadimages", function(req, res) {
-  let errors = [];
-  const firstImage = req.files.firstImage;
-  const secondImage = req.files.secondImage;
-  const thirdImage = req.files.thirdImage;
-  if((firstImage.md5 === secondImage.md5) || (firstImage.md5 === thirdImage.md5) || (secondImage.md5 === thirdImage.md5)){
-    errors.push({msg: "All photos should be distinct"});
-    res.render("uploadImages", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno});
-  }else{
-    const imagesuploaded = new UploadedImages({
-      enrollmentno: req.body.enrollmentno,
-      firstImagePath: "Link1",
-      secondImagePath: "Link2",
-      thirdImagePath: "Link3"
-    });
-    imagesuploaded.save();
-    const query = {enrollmentno: req.body.enrollmentno};
-    let img1 = false, img2 = false, img3 = false;
-    cloudinary.uploader.upload(firstImage.tempFilePath, (err, result) => {
-      const firstLink = result.url;
-      UploadedImages.findOneAndUpdate(query, {firstImagePath: firstLink}, function(err, result){
-        if(err){
-          console.log(err);
-        }else{
-          img1 = true;
-          console.log("first");
-          if(img1 && img2 && img3){
-            console.log("final");
-            res.redirect("/studentHome");
-          }
-        }
-      });
-    });
-    cloudinary.uploader.upload(secondImage.tempFilePath, (err, result) => {
-      const secondLink = result.url;
-      UploadedImages.findOneAndUpdate(query, {secondImagePath: secondLink}, function(err, result){
-        if(err){
-          console.log(err);
-        }else{
-          img2 = true;
-          console.log("second");
-          if(img1 && img2 && img3){
-            console.log("final");
-            res.redirect("/studentHome");
-          }
-        }
-      });
-    });
-    cloudinary.uploader.upload(thirdImage.tempFilePath, (err, result) => {
-      const thirdLink = result.url;
-      UploadedImages.findOneAndUpdate(query, {thirdImagePath: thirdLink}, function(err, result){
-        if(err){
-          console.log(err);
-        }else{
-          img3 = true;
-          console.log("third");
-          if(img1 && img2 && img3){
-            console.log("final");
-            res.redirect("/studentHome");
-          }
-        }
-      });
-    });
-  }
-});
-
-app.post("/attendanceFull", function(req, res) {
-  console.log(req.body);
-  const d = new Date();
-  const month = d.getMonth() + 1;
-  Teachermessage.find({enrollmentno: req.body.enrollmentno, subjectCode: req.body.subjectCode, currMonth: month}, function(err, result) {
-    if(err){
-      console.log(err);
-    }else{
-      if(result.length === 3){
-        res.render("messages", {msg: "Can't message teacher more than three times in a month.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
-      }else{
-        res.render("messageTeacher", {studentName: req.body.studentName, username: req.body.username, enrollmentno: req.body.enrollmentno, branch: req.body.branch, subjectCode: req.body.subjectCode, facultyCode: req.body.facultyCode, imageUploaded: req.body.imageUploaded});
-      }
-    }
-  });
-});
-
-app.post("/messageTeacher", function(req, res) {
-  console.log(req.body);
-  const d = new Date();
-  let todaysDate = "";
-  let date = d.getDate();
-  if(date >= 1 && date <= 9){
-    date = "0" + date;
-  }
-  let month = d.getMonth() + 1;
-  if(month >= 1 && month <= 9){
-    month = "0" + month;
-  }
-  let year = d.getFullYear();
-  todaysDate += date + "/" + month + "/" + year;
-  let currTime = "";
-  let hour = d.getHours();
-  if(hour >= 0 && hour <= 9){
-    hour = "0" + hour;
-  }
-  let minute = d.getMinutes();
-  if(minute >= 0 && minute <= 9){
-    minute = "0" + minute;
-  }
-  let second = d.getSeconds();
-  if(second >= 0 && second <= 9){
-    second = "0" + second;
-  }
-  currTime += hour + ":" + minute + ":" + second;
-  const messageToTeacher = new Teachermessage({
-    studentName: req.body.studentName,
-    username: req.body.username,
-    enrollmentno: req.body.enrollmentno,
-    branch: req.body.branch,
-    imageUploaded: req.body.imageUploaded,
-    subjectCode: req.body.subjectCode,
-    facultyCode: req.body.facultyCode,
-    message: req.body.messageForTeacher,
-    status: "Unread",
-    currMonth: month,
-    todaysDate: todaysDate,
-    currTime: currTime
-  });
-  messageToTeacher.save();
-  res.render("messages", {msg: "Message sent!", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "View Message", enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode});
-});
-
-app.post("/viewmessagesenttoteacher", function(req, res) {
-  console.log(req.body);
-  const d = new Date();
-  let todaysDate = "";
-  let date = d.getDate();
-  if(date >= 1 && date <= 9){
-    date = "0" + date;
-  }
-  let month = d.getMonth() + 1;
-  if(month >= 1 && month <= 9){
-    month = "0" + month;
-  }
-  let year = d.getFullYear();
-  todaysDate += date + "/" + month + "/" + year;
-  Teachermessage.findOne({enrollmentno: req.body.enrollmentno, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode, todaysDate: todaysDate}, function(err, result) {
-    if(err){
-      console.log(err);
-    }else{
-      res.render("showMessage", {studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msg: result});
-    }
-  });
-});
-
-app.post("/studentRegister", function(req, res) {
-  console.log(req.body);
-  const email = req.body.username;
-  const studentName = req.body.studentName;
-  const enrollmentno = req.body.enrollmentno;
-  const branch = req.body.branch;
-  let errors = [];
-  if (req.body.branch === "") {
-    errors.push({msg: "Please Select branch"});
-  }
-  if (errors.length > 0) {
-    res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
-  }else{
-    if(/^[a-zA-Z]+$/.test(req.body.studentName) === false){
-      errors.push({msg: "Please enter correct name"});
-    }
-    if(errors.length > 0){
-      res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
-    }else{
-      if (req.body.password.length < 6) {
-        errors.push({msg: "Password should be atleast 6 characters"});
-      }
-      if (req.body.password.length > 15) {
-        errors.push({msg: "Password should not exceed 15 characters"});
-      }
-      if (errors.length > 0) {
-        res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
-      } else {
-        if (req.body.enrollmentno.length != 11) {
-          errors.push({msg: "Enrollment Number should have 11 digits"});
-        }
-        if (errors.length > 0) {
-          res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
-        } else {
-          if (req.body.enrollmentno.match(/^[0-9]+$/) == null) {
-            errors.push({msg: "Enrollment Number should consist of digits only"});
-          }
-          if (errors.length > 0) {
-            res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
-          } else {
-              Student.findOne({enrollmentno: req.body.enrollmentno}, function(err, result) {
-                if(err){
-                  console.log(err);
-                }else{
-                  if (result != null) {
-                    errors.push({msg: "Invalid Enrollment Number"});
-                    if (errors.length > 0) {
-                      res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
-                    }
-                  }else{
-                    Student.register({username: req.body.username, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno, branch: req.body.branch, role: "Student"}, req.body.password, function(err, user) {
-                      if (err) {
-                        errors.push({msg: "Email is already registered"})
-                        res.render("studentRegister", {errors, studentName,email, enrollmentno, branch});
-                      } else {
-                        passport.authenticate("student-local")(req, res, function() {
-                          res.redirect("/uploadimages");
-                        });
-                      }
-                    });
-                  }
-                }
-              });
-            }
-          }
-        }
-    }
-  }
-});
-
-app.post("/teacherRegister", function(req, res) {
-  console.log(req.body);
-  const email = req.body.username;
-  const teacherName = req.body.teacherName;
-  const facultyCode = req.body.facultyCode;
-  const subjectCode = req.body.subjectCode;
-  let errors = [];
-  if(req.body.facultyCode === ""){
-    errors.push({msg: "Please Select Faculty Code"});
-  }
-  if(errors.length > 0){
-    res.render("teacherRegister", {errors, teacherName, email, facultyCode});
-  }else{
-    if(/^[a-zA-Z]+$/.test(req.body.teacherName) === false){
-      errors.push({msg: "Please enter correct name"});
-    }
-    if(errors.length > 0){
-      res.render("teacherRegister", {errors, teacherName, email, facultyCode});
-    }else{
-      if (req.body.password.length < 6) {
-        errors.push({msg: "Password should be atleast 6 characters"});
-      }
-      if (req.body.password.length > 15) {
-        errors.push({msg: "Password should not exceed 15 characters"});
-      }
-      if(errors.length > 0){
-        res.render("teacherRegister", {errors, teacherName, email, facultyCode});
-      }else{
-        if(req.body.collegeCode != college_code){
-          errors.push({msg: "Incorrect College Code"});
-        }
-        if(errors.length > 0){
-          res.render("teacherRegister", {errors, teacherName, email, facultyCode});
-        }else{
-          Teacher.findOne({facultyCode: req.body.facultyCode}, function(err, result) {
-            if(err){
-              console.log(err);
-            }else{
-              if(result != null){
-                errors.push({msg: "Invalid Faculty Code"});
-                if(errors.length > 0){
-                  res.render("teacherRegister", {errors, teacherName, email, facultyCode});
-                }
-              }else{
-                Teacher.register({username: req.body.username, teacherName: req.body.teacherName, facultyCode: req.body.facultyCode, subjectCode: req.body.subjectCode, role: "Teacher"}, req.body.password, function(err, user) {
-                  if (err) {
-                    errors.push({msg: "Email is already registered"})
-                    res.render("teacherRegister", {errors, teacherName, email, facultyCode});
-                  } else {
-                    passport.authenticate("teacher-local")(req, res, function() {
-                      res.redirect("/teacherHome");
-                    });
-                  }
-                });
-              }
-            }
-          });
-        }
-      }
-    }
-  }
-});
-
-app.post("/studentLogin", passport.authenticate("student-local", {
-  successRedirect: "/studentHome",
-  failureRedirect: "/studentLogin",
-  failureFlash: true
-}));
-
-app.post("/teacherLogin", passport.authenticate("teacher-local", {
-  successRedirect: "/teacherHome",
-  failureRedirect: "/teacherLogin",
-  failureFlash: true
-}));
+/* ############### Logout ############### */
 
 app.get("/studentLogout", ensureAuthStudent, function(req, res) {
   req.logout();
@@ -1415,6 +1399,8 @@ app.get("/teacherLogout", ensureAuthTeacher, function(req, res) {
   req.flash("success_msg", "You are logged out");
   res.redirect("/teacherLogin");
 });
+
+/* ############### Middleware ############### */
 
 function ensureAuthStudent(req, res, next) {
   if (req.isAuthenticated()) {
@@ -1449,6 +1435,8 @@ function ensureGuestTeacher(req, res, next) {
     return next();
   }
 }
+
+/* ############### Port ############### */
 
 const PORT = process.env.PORT || 3000;
 

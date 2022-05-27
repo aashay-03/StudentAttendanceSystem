@@ -4,6 +4,8 @@ const box = document.querySelector(".box");
 const attendanceStatus = document.querySelector(".attendance-status");
 const attendanceText = document.querySelector(".attendance-text");
 
+/* ############### Custom Dropdown Menu ############### */
+
 var x, i, j, l, ll, selElmnt, a, b, c;
 x = document.getElementsByClassName("custom-select");
 l = x.length;
@@ -77,11 +79,7 @@ function closeAllSelect(elmnt) {
 document.addEventListener("click", closeAllSelect);
 
 if(attendanceStatus.innerHTML === "Good" || attendanceStatus.innerHTML === "Fine"){
-  attendanceText.style.color = "green";
+  attendanceText.style.color = "#018749";
 }else{
-  attendanceText.style.color = "red";
-}
-
-function backToHome() {
-  location.href = "http://localhost:3000/studentHome";
+  attendanceText.style.color = "#FF2400";
 }

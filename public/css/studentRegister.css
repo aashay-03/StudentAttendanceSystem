@@ -1,29 +1,23 @@
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: sans-serif;
-}
-
 body {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   height: 95vh;
-  background-color: #d9e4f5;
-  background-image: linear-gradient(315deg, #d9e4f5 0%, #d9e4f5 74%);
 }
 
 .heading {
   margin-bottom: 30px;
   font-size: 2.5rem;
+  color: #0e3564;
 }
 
 .register-box {
   padding: 25px 20px 20px 20px;
   border: 2px solid black;
   border-radius: 15px;
+  background-color: #A9C9FF;
+  background-image: linear-gradient(315deg, #A9C9FF 0%, #FFBBEC 100%);
 }
 
 .register-form {
@@ -75,6 +69,7 @@ input {
   outline: none;
   border: 1px solid black;
   font-size: 1rem;
+  background-color: #fff;
 }
 
 .custom-select select {
@@ -131,17 +126,23 @@ input {
 
 .register-form button {
   padding: 10px 20px;
-  border: 1px solid black;
+  border: 2px solid #9933ff;
+  color: #fff;
   outline: none;
   margin: 13.5px 1px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
-  background-color: #efefef;
+  background-color: #726cf8;
+  background-image: linear-gradient(315deg, #726cf8 0%, #e975a8 74%);
   cursor: pointer;
 }
 
 .register-form button:hover {
-  background-color: #e0ebeb;
+  background-image: linear-gradient(300deg, #726cf8 0%, #e975a8 74%);
+}
+
+.login-link {
+  color: #0a2342;
 }
 
 .login-link a{
@@ -152,20 +153,4 @@ input {
 
 .login-link a:hover{
   text-decoration: underline;
-}
-
-::-webkit-scrollbar {
-  width: 0.9em;
-}
-
-::-webkit-scrollbar-track {
-  background-color: #A9C9FF;
-  background-image: linear-gradient(180deg, #A9C9FF 0%, #FFBBEC 100%);
-  border-radius: 100vw;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #8EC5FC;
-  background-image: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);
-  border-radius: 100vw;
 }

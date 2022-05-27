@@ -2,11 +2,7 @@ const attendanceStatus = document.querySelector(".attendance-status");
 const attendanceText = document.querySelector(".attendance-text");
 
 if(attendanceStatus.innerHTML === "Good" || attendanceStatus.innerHTML === "Fine"){
-  attendanceText.style.color = "green";
+  attendanceText.style.color = "#018749";
 }else{
-  attendanceText.style.color = "red";
-}
-
-function backToHome() {
-  location.href = "http://localhost:3000/studentHome";
+  attendanceText.style.color = "#FF2400";
 }

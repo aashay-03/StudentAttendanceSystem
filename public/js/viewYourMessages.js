@@ -2,6 +2,8 @@ const myInput = document.querySelector(".hidden-input");
 const myForm = document.querySelector(".view-messages");
 const box = document.querySelector(".box");
 
+/* ############### Custom Dropdown Menu ############### */
+
 var x, i, j, l, ll, selElmnt, a, b, c;
 x = document.getElementsByClassName("custom-select");
 l = x.length;
@@ -73,7 +75,3 @@ function closeAllSelect(elmnt) {
 }
 
 document.addEventListener("click", closeAllSelect);
-
-function backToHome() {
-  location.href = "http://localhost:3000/studentHome";
-}

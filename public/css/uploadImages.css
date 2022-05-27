@@ -1,27 +1,5 @@
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: sans-serif;
-}
-
 body {
   text-align: center;
-  background-color: #d9e4f5;
-  background-image: linear-gradient(315deg, #d9e4f5 0%, #d9e4f5 74%);
-}
-
-.navbar {
-  background-image: linear-gradient(to right, #fc5c7d, #6a82fb);
-  display: flex;
-  justify-content: space-between;
-  height: 76px;
-}
-
-.navbar h1 {
-  margin-left: 25px;
-  margin-top: 18.5px;
-  color: #fff;
 }
 
 .imp-info {
@@ -33,7 +11,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 75px);
+  height: calc(100vh - 76px);
   position: relative;
 }
 
@@ -51,13 +29,15 @@ body {
 }
 
 .instruction-box li {
-  color: red;
+  color: #FF2400;
 }
 
 .upload-images-box {
   padding: 25px 20px 20px 20px;
   border: 2px solid black;
   border-radius: 15px;
+  background-color: #A9C9FF;
+  background-image: linear-gradient(315deg, #A9C9FF 0%, #FFBBEC 100%);
 }
 
 .upload-images-form {
@@ -117,45 +97,33 @@ input {
 
 .upload-images-form .submitBtn {
   padding: 10px 20px;
-  border: 1px solid #0004fc;
+  border: 2px solid #9933ff;
+  color: #fff;
   outline: none;
   margin: 13.5px 23.5px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
-  background: #4aabff;
+  background-color: #726cf8;
+  background-image: linear-gradient(315deg, #726cf8 0%, #e975a8 74%);
   cursor: pointer;
   display: none;
 }
 
 .upload-images-form .submitBtn:hover {
-  background-color: #40a6ff;
+  background-image: linear-gradient(300deg, #726cf8 0%, #e975a8 84%);
 }
 
 .upload-images-form .displayBtn {
   padding: 10px 20px;
-  border: 1px solid #002afc;
+  border: 2px solid #9933ff;
+  color: #fff;
   outline: none;
   margin: 13.5px 23.5px 13.5px 1px;
   font-size: 1rem;
   border-radius: 5px;
-  background: #4aabff;
+  background-color: #726cf8;
+  background-image: linear-gradient(315deg, #726cf8 0%, #e975a8 74%);
   opacity: 0.3;
-}
-
-::-webkit-scrollbar {
-  width: 0.9em;
-}
-
-::-webkit-scrollbar-track {
-  background-color: #A9C9FF;
-  background-image: linear-gradient(180deg, #A9C9FF 0%, #FFBBEC 100%);
-  border-radius: 100vw;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #8EC5FC;
-  background-image: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);
-  border-radius: 100vw;
 }
 
 /* ############### Media Queries ############### */

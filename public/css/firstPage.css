@@ -1,28 +1,5 @@
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: sans-serif;
-}
-
 body {
   text-align: center;
-  background-color: #d9e4f5;
-  background-image: linear-gradient(315deg, #d9e4f5 0%, #d9e4f5 74%);
-
-}
-
-.navbar {
-  background-image: linear-gradient(to right, #fc5c7d, #6a82fb);
-  display: flex;
-  justify-content: space-between;
-  height: 76px;
-}
-
-.navbar h1 {
-  margin-left: 25px;
-  margin-top: 18.5px;
-  color: #fff;
 }
 
 .container {
@@ -66,20 +43,4 @@ button {
 
 button:hover {
   background-image: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 65%, #FF99AC 100%);
-}
-
-::-webkit-scrollbar {
-  width: 0.9em;
-}
-
-::-webkit-scrollbar-track {
-  background-color: #A9C9FF;
-  background-image: linear-gradient(180deg, #A9C9FF 0%, #FFBBEC 100%);
-  border-radius: 100vw;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #8EC5FC;
-  background-image: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);
-  border-radius: 100vw;
 }
