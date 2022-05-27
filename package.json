@@ -8,6 +8,9 @@
   },
   "author": "Ashutosh",
   "license": "ISC",
+  "engines": {
+    "node": "14.17.0"
+  },
   "dependencies": {
     "cloudinary": "^1.29.1",
     "connect-flash": "^0.1.1",
