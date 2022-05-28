@@ -92,13 +92,7 @@ input {
 .file {
   width: 222px;
   border: none;
-}
-
-.error-msg {
-  font-size: 0.6rem;
-  color: red;
-  padding-right: 20px;
-  visibility: hidden;
+  margin-bottom: 10px;
 }
 
 /* ############### Buttons ############### */

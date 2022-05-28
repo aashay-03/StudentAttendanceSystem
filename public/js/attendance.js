@@ -19,7 +19,7 @@ var myFunction = setInterval(updateTime, 1000);
 function updateTime(){
   let currTime = new Date();
   let diff = currTime - startTime;
-  if(diff >= 27500){
+  if(diff >= 35000){
     if(match < 33){
       match = 0;
       notmatch = 0;
@@ -84,7 +84,7 @@ async function recognizeFaces() {
         para.innerHTML = "Scanning Face...";
         para.style.color = "#0e3564";
       }else if(detections.length === 0){
-        if(diff >= 27500){
+        if(diff >= 35000){
           para.style.display = "none";
         }else{
           para.style.display = "block";

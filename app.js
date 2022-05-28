@@ -84,9 +84,7 @@ const studentSchema = new mongoose.Schema({
 
 const uploadedImagesSchema = new mongoose.Schema({
   enrollmentno: String,
-  firstImagePath: String,
-  secondImagePath: String,
-  thirdImagePath: String
+  firstImagePath: String
 });
 
 const validateAttendanceSchema = new mongoose.Schema({
@@ -317,61 +315,22 @@ app.get("/uploadimages", ensureAuthStudent, function(req, res) {
 app.post("/uploadimages", function(req, res) {
   let errors = [];
   const firstImage = req.files.firstImage;
-  const secondImage = req.files.secondImage;
-  const thirdImage = req.files.thirdImage;
-  if((firstImage.md5 === secondImage.md5) || (firstImage.md5 === thirdImage.md5) || (secondImage.md5 === thirdImage.md5)){
-    errors.push({msg: "All photos should be distinct"});
-    res.render("uploadImages", {errors, studentName: req.body.studentName, enrollmentno: req.body.enrollmentno});
-  }else{
-    const imagesuploaded = new UploadedImages({
-      enrollmentno: req.body.enrollmentno,
-      firstImagePath: "Link1",
-      secondImagePath: "Link2",
-      thirdImagePath: "Link3"
+  const imagesuploaded = new UploadedImages({
+    enrollmentno: req.body.enrollmentno,
+    firstImagePath: "Link1",
+  });
+  imagesuploaded.save();
+  const query = {enrollmentno: req.body.enrollmentno};
+  cloudinary.uploader.upload(firstImage.tempFilePath, (err, result) => {
+    const firstLink = result.url;
+    UploadedImages.findOneAndUpdate(query, {firstImagePath: firstLink}, function(err, result){
+      if(err){
+        console.log(err);
+      }else{
+        res.redirect("/studentHome");
+      }
     });
-    imagesuploaded.save();
-    const query = {enrollmentno: req.body.enrollmentno};
-    let img1 = false, img2 = false, img3 = false;
-    cloudinary.uploader.upload(firstImage.tempFilePath, (err, result) => {
-      const firstLink = result.url;
-      UploadedImages.findOneAndUpdate(query, {firstImagePath: firstLink}, function(err, result){
-        if(err){
-          console.log(err);
-        }else{
-          img1 = true;
-          if(img1 && img2 && img3){
-            res.redirect("/studentHome");
-          }
-        }
-      });
-    });
-    cloudinary.uploader.upload(secondImage.tempFilePath, (err, result) => {
-      const secondLink = result.url;
-      UploadedImages.findOneAndUpdate(query, {secondImagePath: secondLink}, function(err, result){
-        if(err){
-          console.log(err);
-        }else{
-          img2 = true;
-          if(img1 && img2 && img3){
-            res.redirect("/studentHome");
-          }
-        }
-      });
-    });
-    cloudinary.uploader.upload(thirdImage.tempFilePath, (err, result) => {
-      const thirdLink = result.url;
-      UploadedImages.findOneAndUpdate(query, {thirdImagePath: thirdLink}, function(err, result){
-        if(err){
-          console.log(err);
-        }else{
-          img3 = true;
-          if(img1 && img2 && img3){
-            res.redirect("/studentHome");
-          }
-        }
-      });
-    });
-  }
+  });
 });
 
 /* ############### Give Attendance ############### */
