@@ -2,6 +2,8 @@ body {
   text-align: center;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -23,6 +25,8 @@ body {
   cursor: pointer;
   transform: scale(1.5);
 }
+
+/* ############### Dropdown Menu ############### */
 
 .custom-select {
   position: relative;
@@ -107,6 +111,8 @@ input {
   font-size: 1rem;
 }
 
+/* ############### Message Form ############### */
+
 .selectDate {
   width: 210px;
 }
@@ -118,6 +124,29 @@ input {
   justify-content: space-between;
   width: 85vw;
 }
+
+.no-msg {
+  margin-top: 23vh;
+  color: #3F00FF;
+  margin-bottom: 10px;
+}
+
+/* ############### Message Box ############### */
+
+.box {
+  width: 90vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.adjust-height {
+  margin-top: 460px;
+}
+
+/* ############### Message Cards ############### */
 
 .message-card {
   padding: 10px;
@@ -131,25 +160,6 @@ input {
   color: #0a2342;
   background-color: #A9C9FF;
   background-image: linear-gradient(315deg, #A9C9FF 0%, #FFBBEC 100%);
-}
-
-.no-msg {
-  margin-top: 23vh;
-  color: #3F00FF;
-  margin-bottom: 10px;
-}
-
-.box {
-  width: 90vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 40px;
-}
-
-.adjust-height {
-  margin-top: 460px;
 }
 
 .codeOfFaculty {
@@ -193,6 +203,8 @@ input {
   text-align: center;
   bottom: 10px;
 }
+
+/* ############### Buttons ############### */
 
 button {
   padding: 10px 20px;

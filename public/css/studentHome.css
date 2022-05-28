@@ -2,6 +2,8 @@ body {
   text-align: center;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -10,6 +12,8 @@ body {
   height: calc(100vh - 76px);
 }
 
+/* ############### Student Box ############### */
+
 .home-box {
   padding: 25px 20px 20px 20px;
   border: 2px solid black;
@@ -17,6 +21,8 @@ body {
   background-color: #A9C9FF;
   background-image: linear-gradient(315deg, #A9C9FF 0%, #FFBBEC 100%);
 }
+
+/* ############### Buttons ############### */
 
 button {
   margin: 12px;

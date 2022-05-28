@@ -2,6 +2,8 @@ body {
   text-align: center;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -52,6 +54,8 @@ input[type=text]:disabled {
   text-align: left;
   color: #0e3564;
 }
+
+/* ############### Attendance Box ############### */
 
 .box {
   width: 80vw;

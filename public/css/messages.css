@@ -14,6 +14,8 @@ body {
   display: none;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -21,6 +23,8 @@ body {
   align-items: center;
   height: calc(100vh - 76px);
 }
+
+/* ############### Buttons ############### */
 
 .container button {
   padding: 10px 20px;
@@ -39,6 +43,8 @@ body {
 .container button:hover {
   background-image: linear-gradient(300deg, #726cf8 0%, #e975a8 84%);
 }
+
+/* ############### Message ############### */
 
 .msg-textbox {
   margin-bottom: 9px;

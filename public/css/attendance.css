@@ -11,6 +11,8 @@ body {
   background-image: linear-gradient(315deg, #d9e4f5 0%, #d9e4f5 74%);
 }
 
+/* ############### Navbar ############### */
+
 .navbar {
   background-image: linear-gradient(to right, #fc5c7d, #6a82fb);
   display: flex;
@@ -43,6 +45,8 @@ body {
   margin-right: 25px;
   text-decoration: none;
 }
+
+/* ############### Tooltip ############### */
 
 .tooltip {
   position: relative;
@@ -78,6 +82,8 @@ body {
   border-color: transparent transparent transparent black;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -90,6 +96,8 @@ body {
   margin-top: 15px;
   color: #000;
 }
+
+/* ############### Buttons ############### */
 
 .container button {
   padding: 10px 20px;
@@ -123,6 +131,8 @@ body {
 .push-attendance-to-db {
   display: none;
 }
+
+/* ############### Video Elements ############### */
 
 canvas {
   width: 480px;
@@ -158,6 +168,8 @@ canvas {
 .tries-rem {
   display: none;
 }
+
+/* ############### Scrollbar ############### */
 
 ::-webkit-scrollbar {
   width: 0.9em;

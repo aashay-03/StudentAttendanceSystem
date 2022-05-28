@@ -2,6 +2,8 @@ body {
   text-align: center;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -44,6 +46,8 @@ input {
   border: 1px solid black;
   font-size: 1rem;
 }
+
+/* ############### Dropdown Menu ############### */
 
 .custom-select {
   position: relative;
@@ -108,6 +112,8 @@ input {
   background-color: #1e90ff;
 }
 
+/* ############### Attendance Form ############### */
+
 .bound-together {
   display: flex;
   align-items: center;
@@ -150,6 +156,8 @@ input {
   border: 1px solid transparent;
 }
 
+/* ############### Buttons ############### */
+
 button {
   padding: 10px 20px;
   border: 2px solid #9933ff;
@@ -172,6 +180,8 @@ button:hover {
   margin-top: 20vh;
   color: #3F00FF;
 }
+
+/* ############### Attendance Box ############### */
 
 .box {
   width: 90vw;

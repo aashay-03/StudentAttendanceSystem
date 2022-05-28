@@ -2,6 +2,8 @@ body {
   text-align: center;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -22,6 +24,8 @@ body {
   display: none;
 }
 
+/* ############### Message ############### */
+
 .container .msg-textbox {
   color: #FF2400;
   margin-bottom: 15px;
@@ -36,6 +40,8 @@ body {
 .view-message-form {
   display: none;
 }
+
+/* ############### Buttons ############### */
 
 button {
   padding: 10px 20px;

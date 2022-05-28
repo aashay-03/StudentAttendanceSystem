@@ -1,3 +1,7 @@
+function backToHome() {
+  location.href = "http://localhost:3000";
+}
+
 function backToHomeStudent() {
   location.href = "http://localhost:3000/studentHome";
 }

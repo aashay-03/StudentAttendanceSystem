@@ -382,8 +382,8 @@ app.post("/homegiveattendance", function(req, res) {
   if(day === 0){
     res.render("messages", {msg: "Can't give attendance on Sundays.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "", enrollmentno: "", facultyCode: "", subjectCode: ""});
   }else{
-    const maxValue = 81200;
-    const minValue = 32400;
+    const maxValue = 86400;
+    const minValue = 0;
     let hour = d.getHours();
     let minute = d.getMinutes();
     let second = d.getSeconds();

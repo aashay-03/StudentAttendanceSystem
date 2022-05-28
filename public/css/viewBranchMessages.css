@@ -2,6 +2,8 @@ body {
   text-align: center;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -51,6 +53,8 @@ input[type=text]:disabled {
   background: #F2F2F2;
 }
 
+/* ############### Message Form ############### */
+
 .unread-msgs {
   display: flex;
   align-items: center;
@@ -71,6 +75,8 @@ input[type=text]:disabled {
   margin-right: 10px;
 }
 
+/* ############### Message Box ############### */
+
 .box {
   width: 90vw;
   display: flex;
@@ -83,6 +89,8 @@ input[type=text]:disabled {
 .adjust-height {
   margin-top: 210px;
 }
+
+/* ############### Message Cards ############### */
 
 .message-card {
   padding: 10px;
@@ -116,6 +124,7 @@ input[type=text]:disabled {
   color: #0a2342;
   background: linear-gradient(60deg, #96deda 0%, #50c9c3 100%);
 }
+
 .nameOfStudent {
   position: absolute;
   top: 45px;
@@ -185,6 +194,8 @@ input[type=text]:disabled {
   text-align: center;
   bottom: 10px;
 }
+
+/* ############### Buttons ############### */
 
 button {
   padding: 10px 20px;

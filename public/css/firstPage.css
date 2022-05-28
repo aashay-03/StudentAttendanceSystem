@@ -2,6 +2,8 @@ body {
   text-align: center;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: row;
@@ -19,13 +21,19 @@ body {
   justify-content: center;
 }
 
+/* ############### Teacher Section ############### */
+
 .teacher-box {
   border-color: transparent #999999 transparent transparent;
 }
 
+/* ############### Student Section ############### */
+
 .student-box {
   border-color: transparent transparent transparent #999999;
 }
+
+/* ############### Buttons ############### */
 
 button {
   padding: 10px 20px;

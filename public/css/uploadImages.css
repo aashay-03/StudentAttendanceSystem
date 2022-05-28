@@ -6,6 +6,8 @@ body {
   display: none;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -14,6 +16,8 @@ body {
   height: calc(100vh - 76px);
   position: relative;
 }
+
+/* ############### Instructions ############### */
 
 .instruction-heading {
   position: absolute;
@@ -31,6 +35,8 @@ body {
 .instruction-box li {
   color: #FF2400;
 }
+
+/* ############### Upload Images Box ############### */
 
 .upload-images-box {
   padding: 25px 20px 20px 20px;
@@ -94,6 +100,8 @@ input {
   padding-right: 20px;
   visibility: hidden;
 }
+
+/* ############### Buttons ############### */
 
 .upload-images-form .submitBtn {
   padding: 10px 20px;

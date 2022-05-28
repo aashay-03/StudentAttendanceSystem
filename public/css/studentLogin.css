@@ -6,11 +6,21 @@ body {
   height: 80vh;
 }
 
+.back-btn {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  cursor: pointer;
+  transform: scale(1.5);
+}
+
 .heading {
   margin-bottom: 30px;
   font-size: 2.5rem;
   color: #0e3564;
 }
+
+/* ############### Login Box ############### */
 
 .login-box {
   padding: 25px 20px 20px 20px;
@@ -61,6 +71,8 @@ input {
   display: none;
 }
 
+/* ############### Buttons ############### */
+
 .login-form button {
   padding: 10px 20px;
   border: 2px solid #9933ff;
@@ -77,6 +89,8 @@ input {
 .login-form button:hover {
   background-image: linear-gradient(300deg, #726cf8 0%, #e975a8 74%);
 }
+
+/* ############### Signup Redirect ############### */
 
 .signup-link {
   color: #0a2342;

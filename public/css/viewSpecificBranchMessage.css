@@ -3,6 +3,8 @@ body {
 
 }
 
+/* ############### Container ############### */
+
 .container {
   position: relative;
   line-height: 2;
@@ -23,6 +25,8 @@ body {
 .special-color {
   color: #0a2342;
 }
+
+/* ############### Message ############### */
 
 .nameOfStudent {
   position: absolute;

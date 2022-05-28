@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/studentRegister.css">
+  <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
   <script>
     if ( window.history.replaceState ) {
       window.history.replaceState( null, null, window.location.href );
@@ -18,6 +19,7 @@
 </head>
 
 <body>
+  <box-icon class="back-btn" name="arrow-back" onclick="backToHome()"></box-icon>
   <h1 class="heading">Student Register</h1>
   <div class="register-box">
     <%- include('partials/errorMsgs') %>
@@ -46,7 +48,8 @@
     </form>
   </div>
 
-  <script defer src="js/studentSignupLogin.js" charset="utf-8"></script>
+  <script src="js/studentSignupLogin.js" charset="utf-8"></script>
+  <script src="js/index.js" charset="utf-8"></script>
 </body>
 
 </html>

@@ -2,6 +2,8 @@ body {
   text-align: center;
 }
 
+/* ############### Container ############### */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -45,6 +47,8 @@ input {
   border: 1px solid black;
   font-size: 1rem;
 }
+
+/* ############### Dropdown Menu ############### */
 
 .custom-select {
   position: relative;
@@ -109,6 +113,8 @@ input {
   background-color: #1e90ff;
 }
 
+/* ############### Message Form ############### */
+
 .unread-msgs {
   display: flex;
   align-items: center;
@@ -129,6 +135,8 @@ input {
   margin-right: 10px;
 }
 
+/* ############### Message Box ############### */
+
 .box {
   width: 90vw;
   display: flex;
@@ -141,6 +149,8 @@ input {
 .adjust-height {
   margin-top: 230px;
 }
+
+/* ############### Message Cards ############### */
 
 .message-card {
   padding: 10px;
@@ -232,6 +242,8 @@ input {
   text-align: center;
   bottom: 10px;
 }
+
+/* ############### Buttons ############### */
 
 button {
   padding: 10px 20px;
