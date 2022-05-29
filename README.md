@@ -9,7 +9,6 @@ A web application that records student attendance using face recognition.
 
 - Please make sure that you already have Node.js installed in your system.
 - Next, type ```git clone https://github.com/aashay-03/StudentAttendanceSystem.git``` on your command prompt.
-- Once the repository is cloned, open the cloned folder in your code editor.
 - Create a ```.env``` file inside the cloned folder and paste the environment variables (provided in the Final Submission Form) inside the ```.env``` file.
 - Run ```npm i``` on your command prompt.
 - Type ```node app.js``` on your prompt.
