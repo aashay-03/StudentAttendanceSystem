@@ -252,7 +252,7 @@ app.post("/studentRegister", function(req, res) {
                   console.log(err);
                 }else{
                   if (result != null) {
-                    errors.push({msg: "Invalid Enrollment Number"});
+                    errors.push({msg: "Enrollment Number already registered"});
                     if (errors.length > 0) {
                       res.render("studentRegister", {errors, studentName, email, enrollmentno, branch});
                     }
@@ -338,11 +338,11 @@ app.post("/uploadimages", function(req, res) {
 app.post("/homegiveattendance", function(req, res) {
   const d = new Date();
   const day = d.getDay();
-  if(day === 0){
+  if(day === 8){ // To make testing process easy
     res.render("messages", {msg: "Can't give attendance on Sundays.", studentName: req.body.studentName, imageUploaded: req.body.imageUploaded, msgInfo: "", enrollmentno: "", facultyCode: "", subjectCode: ""});
   }else{
-    const maxValue = 86400;
-    const minValue = 0;
+    const maxValue = 86400; // To make testing process easy
+    const minValue = 0; // To make testing process easy
     let hour = d.getHours();
     let minute = d.getMinutes();
     let second = d.getSeconds();
@@ -992,7 +992,7 @@ app.post("/teacherRegister", function(req, res) {
               console.log(err);
             }else{
               if(result != null){
-                errors.push({msg: "Invalid Faculty Code"});
+                errors.push({msg: "Faculty Code already registered"});
                 if(errors.length > 0){
                   res.render("teacherRegister", {errors, teacherName, email, facultyCode});
                 }
